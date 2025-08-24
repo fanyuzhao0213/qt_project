@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>src/window_beijing.png</file>
+        <file>src/window_beijing_resized.png</file>
+        <file>style.qss</file>
+        <file>src/cloud_unpressed.png</file>
+        <file>src/status_pressed.png</file>
+        <file>src/status_unpressed.png</file>
+        <file>src/uart_pressed.png</file>
+        <file>src/uart_unpressed.png</file>
+        <file>src/window.png</file>
+        <file>src/cloud_pressed.png</file>
+        <file>src/mqtt_beijing.png</file>
+        <file>src/switch_off.png</file>
+        <file>src/switch_on.png</file>
+        <file>src/alarm_off.png</file>
+        <file>src/alarm_on.png</file>
+        <file>src/fan_on.png</file>
+        <file>src/light_off.png</file>
+        <file>src/light_on.png</file>
+        <file>src/fan_off.png</file>
+    </qresource>
+</RCC>

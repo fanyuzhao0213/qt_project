@@ -1,0 +1,243 @@
+/* 左侧面板样式 */
+#left_widget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #2c3e50,
+        stop: 1 #34495e
+    );
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border: none;
+}
+
+/* 云处理界面样式 - 半透明 */
+#cloud_widget {
+    /* 背景图（可选） */
+    /* background-image: url(:/src/mqtt_beijing.png); */
+    background-repeat: no-repeat;
+    background-position: center;
+
+    /* 半透明背景色 */
+    background-color: rgba(80, 200, 120, 140);  /* A=140 表示半透明 */
+
+    /* 边框样式 */
+    border: 2px solid rgba(60, 42, 48, 180);    /* 半透明边框 */
+    border-radius: 20px;                         /* 圆角 */
+
+    /* 内边距 */
+    padding: 10px;
+}
+
+
+/* ================= statusBtn ================= */
+/* 默认状态：背景和面板一致，显示文字 */
+#statusBtn {
+    border: none;
+    border-radius: 12px;
+    min-width: 95px; max-width: 95px;
+    min-height: 50px; max-height: 50px;
+    background-color: #2c3e50;   /* 与面板一致 */
+    color: white;                 /* 文字颜色 */
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 50px;            /* 垂直居中 */
+}
+
+/* 按下或选中状态：显示图片 */
+#statusBtn:checked,
+#statusBtn:pressed {
+    border-image: url(:/src/status_pressed.png) 0 0 0 0 stretch stretch;
+    background-color: none;       /* 图片覆盖背景 */
+    color: transparent;           /* 隐藏文字 */
+}
+
+/* ================= mqttBtn ================= */
+#mqttBtn {
+    border: none;
+    border-radius: 12px;
+    min-width: 95px; max-width: 95px;
+    min-height: 50px; max-height: 50px;
+    background-color: #2c3e50;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 50px;
+}
+
+#mqttBtn:checked,
+#mqttBtn:pressed {
+    border-image: url(:/src/cloud_pressed.png) 0 0 0 0 stretch stretch;
+    background-color: none;
+    color: transparent;
+}
+
+/* ================= uartBtn ================= */
+#uartBtn {
+    border: none;
+    border-radius: 12px;
+    min-width: 95px; max-width: 95px;
+    min-height: 50px; max-height: 50px;
+    background-color: #2c3e50;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 50px;
+}
+
+#uartBtn:checked,
+#uartBtn:pressed {
+    border-image: url(:/src/uart_pressed.png) 0 0 0 0 stretch stretch;
+    background-color: none;
+    color: transparent;
+}
+
+
+
+
+/* ================= Connect Widget ================= */
+#connectWidget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #2ecc71,   /* 上面亮绿色 */
+        stop: 1 #27ae60    /* 下面深绿色 */
+    );
+    border-radius: 12px;
+    border: 1px solid #1e8449;
+}
+
+/* ================= Login Widget ================= */
+#loginWidget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #3498db,   /* 上面亮蓝色 */
+        stop: 1 #2980b9    /* 下面深蓝色 */
+    );
+    border-radius: 12px;
+    border: 1px solid #1f618d;
+}
+
+/* ================= Message Widget ================= */
+#messageWidget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #f39c12,   /* 上面橙色 */
+        stop: 1 #d35400    /* 下面深橙 */
+    );
+    border-radius: 12px;
+    border: 1px solid #a84300;
+}
+
+/* ================= Subscribe Widget ================= */
+#SubWidget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #9b59b6,   /* 上面紫色 */
+        stop: 1 #8e44ad    /* 下面深紫 */
+    );
+    border-radius: 12px;
+    border: 1px solid #6c3483;
+}
+
+/* ================= Publish Widget ================= */
+#PubWidget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #e74c3c,   /* 上面亮红 */
+        stop: 1 #c0392b    /* 下面深红 */
+    );
+    border-radius: 12px;
+    border: 1px solid #922b21;
+}
+
+
+
+/* 控制面板底色 - 半透明渐变 */
+#controlWidget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 rgba(52, 73, 94, 180),   /* 上方半透明 */
+        stop: 1 rgba(44, 62, 80, 180)    /* 下方半透明 */
+    );
+    border-radius: 16px;
+    border: 2px solid rgba(26, 37, 47, 180);  /* 半透明边框 */
+    padding: 12px;
+}
+
+#led_label, #alram_label, #fan_label {
+    color: #ffffff;                   /* 白色字体，更醒目 */
+    font-family: "Segoe UI", "Microsoft YaHei", "Arial", sans-serif; /* 现代、清晰字体 */
+    font-size: 18px;                  /* 字号加大 */
+    font-weight: 700;                 /* 加粗 */
+    qproperty-alignment: AlignCenter; /* 居中对齐 */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* 轻微阴影，让字体更立体 */
+}
+
+
+
+/* ================= LED 按钮 ================= */
+#ledBtn {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    min-width: 200px;
+    min-height: 160px;
+    max-width: 200px;
+    max-height: 160px;
+    qproperty-iconSize: 200px 160px;
+    qproperty-icon: url(:/src/light_off.png); /* 默认图片 */
+}
+#ledBtn:checked {
+    qproperty-icon: url(:/src/light_on.png);  /* 点击保持状态显示图片 */
+}
+#ledBtn:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 12px;
+}
+
+/* ================= FAN 按钮 ================= */
+#fanBtn {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    min-width: 200px;
+    min-height: 160px;
+    max-width: 200px;
+    max-height: 160px;
+    qproperty-iconSize: 200px 160px;
+    qproperty-icon: url(:/src/fan_off.png);
+}
+#fanBtn:checked {
+    qproperty-icon: url(:/src/fan_on.png);
+}
+#fanBtn:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 12px;
+}
+
+/* ================= ALARM 按钮 ================= */
+#alarmBtn {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    min-width: 200px;
+    min-height: 160px;
+    max-width: 200px;
+    max-height: 160px;
+    qproperty-iconSize: 200px 160px;
+    qproperty-icon: url(:/src/alarm_off.png);
+}
+#alarmBtn:checked {
+    qproperty-iconSize: 200px 160px;
+    qproperty-icon: url(:/src/alarm_on.png);
+}
+#alarmBtn:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 12px;
+}
+
