@@ -57,6 +57,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->alram_label->setText("ALARM OFF");
     ui->fan_label->setText("ALARM OFF");
 
+
+    /*UART界面相关定义*/
+    ui->uartwidget->setObjectName("UartWidget");
+    ui->comboBox_uartnum->setObjectName("comboBox_uartnum");
+    ui->comboBox_databit->setObjectName("comboBox_databit");
+    ui->comboBox_stopbit->setObjectName("comboBox_stopbit");
+    ui->comboBox_checkbit->setObjectName("comboBox_checkbit");
+    ui->comboBox_baudrate->setObjectName("comboBox_baudrate");
+    ui->comboBox_sendmode->setObjectName("comboBox_sendmode");
+    ui->comboBox_revmode->setObjectName("comboBox_revmode");
+    ui->openSerialBtn->setObjectName("openSerialBtn");
+
     /*设置setCheckable是否有效*/
     ui->statusBtn->setCheckable(true);
     ui->mqttBtn->setCheckable(true);

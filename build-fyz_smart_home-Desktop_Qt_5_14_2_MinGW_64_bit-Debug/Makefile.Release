@@ -130,6 +130,7 @@ release/qrc_res.cpp: ../fyz_smart_home/res.qrc \
 		../fyz_smart_home/src/status_unpressed.png \
 		../fyz_smart_home/src/cloud_pressed.png \
 		../fyz_smart_home/src/cloud_unpressed.png \
+		../fyz_smart_home/src/down.png \
 		../fyz_smart_home/src/window_beijing_resized.png \
 		../fyz_smart_home/src/fan_off.png \
 		../fyz_smart_home/src/light_off.png \
@@ -942,6 +943,52 @@ release/mainwindow.o: ../fyz_smart_home/mainwindow.cpp ../fyz_smart_home/mainwin
 		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/qtimer.h \
 		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/qbasictimer.h \
 		ui_mainwindow.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/QVariant \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QApplication \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qapplication.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/qcoreapplication.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/qeventloop.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qdesktopwidget.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtGui/qguiapplication.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtGui/qinputmethod.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QComboBox \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qcombobox.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qabstractitemdelegate.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qstyleoption.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qabstractspinbox.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtGui/qvalidator.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/qregularexpression.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qslider.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qabstractslider.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qstyle.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qtabbar.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qrubberband.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/qabstractitemmodel.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QGridLayout \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qgridlayout.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qlayout.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qlayoutitem.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qboxlayout.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QGroupBox \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qgroupbox.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QHBoxLayout \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QLabel \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qlabel.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QMenuBar \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qmenubar.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qmenu.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qaction.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qactiongroup.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QPushButton \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qpushbutton.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qabstractbutton.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QSpacerItem \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QStatusBar \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qstatusbar.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QTextBrowser \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/qtextbrowser.h \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QVBoxLayout \
+		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtWidgets/QWidget \
 		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtGui/QPainter \
 		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtGui/qpainter.h \
 		D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore/QDateTime

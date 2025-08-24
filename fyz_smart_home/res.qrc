@@ -19,5 +19,6 @@
         <file>src/light_off.png</file>
         <file>src/light_on.png</file>
         <file>src/fan_off.png</file>
+        <file>src/down.png</file>
     </qresource>
 </RCC>
