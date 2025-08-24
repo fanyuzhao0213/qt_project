@@ -169,9 +169,9 @@
            <widget class="QWidget" name="loginwidget" native="true">
             <layout class="QGridLayout" name="gridLayout">
              <item row="0" column="0">
-              <widget class="QLabel" name="label">
+              <widget class="QLabel" name="label_broker">
                <property name="text">
-                <string>broker</string>
+                <string>Broker</string>
                </property>
               </widget>
              </item>
@@ -179,9 +179,9 @@
               <widget class="QLineEdit" name="lineEdit_Broker"/>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="label_port">
                <property name="text">
-                <string>port</string>
+                <string>Port</string>
                </property>
               </widget>
              </item>
@@ -189,9 +189,9 @@
               <widget class="QLineEdit" name="lineEdit_Port"/>
              </item>
              <item row="2" column="0">
-              <widget class="QLabel" name="label_3">
+              <widget class="QLabel" name="label_client_id">
                <property name="text">
-                <string>client_id</string>
+                <string>ClientID</string>
                </property>
               </widget>
              </item>
@@ -199,9 +199,9 @@
               <widget class="QLineEdit" name="lineEdit_Client_id"/>
              </item>
              <item row="3" column="0">
-              <widget class="QLabel" name="label_4">
+              <widget class="QLabel" name="label_username">
                <property name="text">
-                <string>user_name</string>
+                <string>UserName</string>
                </property>
               </widget>
              </item>
@@ -209,9 +209,9 @@
               <widget class="QLineEdit" name="lineEdit_Client_id_2"/>
              </item>
              <item row="4" column="0">
-              <widget class="QLabel" name="label_6">
+              <widget class="QLabel" name="label_password">
                <property name="text">
-                <string>password</string>
+                <string>Password</string>
                </property>
               </widget>
              </item>
@@ -243,7 +243,7 @@
            <number>5</number>
           </property>
           <item>
-           <widget class="QLabel" name="PublishMessage">
+           <widget class="QLabel" name="label_Pub">
             <property name="text">
              <string>PublishMessage</string>
             </property>
@@ -271,7 +271,7 @@
            <number>5</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_5">
+           <widget class="QLabel" name="label_Sub">
             <property name="text">
              <string>SublishMessage</string>
             </property>

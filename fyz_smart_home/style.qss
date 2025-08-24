@@ -152,6 +152,14 @@
     border: 1px solid #922b21;
 }
 
+#LabelBroker, #LabelPort, #LabelClientID, #LabelUserName, #LabelPassword, #LabelPub, #LabelSub  {
+    color: #ffffff;                   /* 白色字体，更醒目 */
+    font-family: "Segoe UI", "Microsoft YaHei", "Arial", sans-serif; /* 现代、清晰字体 */
+    font-size: 18px;                  /* 字号加大 */
+    font-weight: 700;                 /* 加粗 */
+    qproperty-alignment: AlignCenter; /* 居中对齐 */
+}
+
 
 
 /* 控制面板底色 - 半透明渐变 */
@@ -172,10 +180,7 @@
     font-size: 18px;                  /* 字号加大 */
     font-weight: 700;                 /* 加粗 */
     qproperty-alignment: AlignCenter; /* 居中对齐 */
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* 轻微阴影，让字体更立体 */
 }
-
-
 
 /* ================= LED 按钮 ================= */
 #ledBtn {

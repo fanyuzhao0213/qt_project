@@ -5,6 +5,7 @@
 #include <QtMqtt/qmqttclient.h>
 #include <qdebug.h>
 #include <QDateTime>
+#include <QTimer>
 
 #define MQTT_AUTO_TOPIC "fyz/123/#"
 
@@ -14,20 +15,33 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // 确保 UI 控件对象名生效
+    // 在 MainWindow 构造函数里初始化
+    mqttTestTimer = new QTimer(this);
+    testCounter = 0;
+    startMQTTSendTest();
+
+    // 左侧边栏相关定义
     ui->left_widget->setObjectName("left_widget");
     ui->statusBtn->setObjectName("statusBtn");
     ui->mqttBtn->setObjectName("mqttBtn");
     ui->uartBtn->setObjectName("uartBtn");
 
+    /*mqtt连接服务器界面相关定义*/
     ui->statuswidget->setObjectName("connectWidget");
     ui->pubwidget->setObjectName("PubWidget");
     ui->subwidget->setObjectName("SubWidget");
     ui->loginwidget->setObjectName("loginWidget");
     ui->messagewidget->setObjectName("messageWidget");
-
     ui->controlwidget->setObjectName("controlWidget");
 
+    ui->label_broker->setObjectName("LabelBroker");
+    ui->label_port->setObjectName("LabelPort");
+    ui->label_client_id->setObjectName("LabelClientID");
+    ui->label_username->setObjectName("LabelUserName");
+    ui->label_password->setObjectName("LabelPassword");
+    ui->label_Pub->setObjectName("LabelPub");
+    ui->label_Sub->setObjectName("LabelSub");
+    /*mqtt控制界面相关定义*/
     ui->ledBtn->setObjectName("ledBtn");
     ui->fanBtn->setObjectName("fanBtn");
     ui->alarmBtn->setObjectName("alarmBtn");
@@ -104,6 +118,9 @@ MainWindow::MainWindow(QWidget *parent)
     // 当客户端断开连接时，触发 brokerDisconnected 槽函数
     connect(m_client, &QMqttClient::disconnected, this, &MainWindow::brokerDisconnected);
 
+    // 构造函数中连接一次
+    connect(m_client, &QMqttClient::messageReceived, this, &MainWindow::receiveMess);
+
     // 当客户端收到 Broker 的 PING 响应时执行 Lambda 函数
     // 用于检测连接是否保持活跃（心跳机制）
     connect(m_client, &QMqttClient::pingResponseReceived, this, []() {
@@ -137,9 +154,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
     QMainWindow::paintEvent(event);
 }
-
-
-
 
 void MainWindow::MyMQTTSubscribe(QString str)
 {
@@ -176,7 +190,6 @@ void MainWindow::brokerConnected()
     ui->textEditMessage->append("Connected!");
     if(m_client->state() == QMqttClient::Connected){
         m_client->subscribe(QString(MQTT_AUTO_TOPIC), 0);
-        connect(m_client, SIGNAL(messageReceived(QByteArray,QMqttTopicName)), this, SLOT(receiveMess(QByteArray,QMqttTopicName)));
     }
 }
 
@@ -184,8 +197,13 @@ void MainWindow::brokerDisconnected()
 {
     qDebug() << "server Disconnected!";
     ui->textEditMessage->append("server Disconnected!");
+
     // 尝试连接到 MQTT 服务器
-    m_client->connectToHost();
+    // 延迟重连，避免递归
+    QTimer::singleShot(1000, this, [this](){
+        if(m_client && m_client->state() == QMqttClient::Disconnected)
+            m_client->connectToHost();
+    });
 }
 
 void MainWindow::receiveMess(const QByteArray &message, const QMqttTopicName &topic)
@@ -195,6 +213,7 @@ void MainWindow::receiveMess(const QByteArray &message, const QMqttTopicName &to
    content += QLatin1String(" Received Topic: ") + topic.name() + QLatin1Char('\n');
    content += QLatin1String(" Message: ") + message + QLatin1Char('\n');
    ui->textEditMessage->append(content);
+   ui->TextEdit_Sub->append(content);
    qDebug() << content;
 }
 
@@ -226,3 +245,32 @@ void MainWindow::on_fanBtn_clicked(bool checked)
     ui->fanBtn->setIcon(QIcon(checked ? ":/src/fan_on.png" : ":/src/fan_off.png"));
     ui->fan_label->setText(checked ? "FAN ON" : "FAN OFF");
 }
+
+
+// 定时发送槽函数
+void MainWindow::sendTestMessage()
+{
+    if (!m_client || m_client->state() != QMqttClient::Connected) {
+        qDebug() << "MQTT not connected!";
+        return;
+    }
+
+    QString topic = "fyz/123/test";
+    QString message = QString("Test message #%1").arg(testCounter++);
+
+    if (m_client->publish(topic, message.toUtf8()) == -1) {
+        qDebug() << "Could not publish message";
+        ui->textEditMessage->append("Could not publish message");
+    } else {
+        qDebug() << "Published:" << message;
+        ui->textEditMessage->append("Published: " + message);
+    }
+}
+
+// 启动定时器函数
+void MainWindow::startMQTTSendTest()
+{
+    connect(mqttTestTimer, &QTimer::timeout, this, &MainWindow::sendTestMessage);
+    mqttTestTimer->start(5000); // 每 5 秒触发一次
+}
+

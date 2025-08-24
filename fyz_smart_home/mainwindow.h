@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPaintEvent>  // 必须包含，用于重写 paintEvent
 #include <QtMqtt/qmqttclient.h>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,6 +22,8 @@ public:
 
     void MyMQTTSubscribe(QString);
     void MyMQTTSendMessage(const QString, const QString);
+    void startMQTTSendTest();
+    void sendTestMessage();
 
 public slots:
     void brokerConnected();
@@ -39,5 +42,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QTimer *mqttTestTimer;
+    int testCounter;
 };
 #endif // MAINWINDOW_H
