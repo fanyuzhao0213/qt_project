@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include <QPaintEvent>  // 必须包含，用于重写 paintEvent
-#include <QtMqtt/qmqttclient.h>
-#include <QTimer>
+#include "ControlModule.h"
+#include "MqttModule.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,30 +20,26 @@ public:
 
     QMqttClient *m_client = nullptr;
 
-    void MyMQTTSubscribe(QString);
-    void MyMQTTSendMessage(const QString, const QString);
-    void startMQTTSendTest();
-    void sendTestMessage();
-
 public slots:
-    void brokerConnected();
-    void updateLogStateChange();
-    void brokerDisconnected();
-    void receiveMess(const QByteArray &, const QMqttTopicName &);
+    void on_ledBtn_clicked(bool checked);
+    void on_fanBtn_clicked(bool checked);
+    void on_alarmBtn_clicked(bool checked);
+
+    void updateMQTTMessage(const QString &topic, const QByteArray &msg);
+    void updateMQTTPubMessage(QString topic, QString payload);
+    void updateMQTTSubMessage(QString topic, QString payload);
+    void updateMQTTState(QMqttClient::ClientState state);
 
 protected:
     void paintEvent(QPaintEvent *event) override; // 重写 paintEvent
 private slots:
-    void on_ledBtn_clicked(bool checked);
-
-    void on_alarmBtn_clicked(bool checked);
-
-    void on_fanBtn_clicked(bool checked);
+    void on_connectMqttButton_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;
 
-    QTimer *mqttTestTimer;
-    int testCounter;
+    ControlModule *controlModule;
+    MqttModule *mqttModule;
+    bool mqttConnected;
 };
 #endif // MAINWINDOW_H

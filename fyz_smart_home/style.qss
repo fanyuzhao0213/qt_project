@@ -101,8 +101,8 @@
 #connectWidget {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 #2ecc71,   /* 上面亮绿色 */
-        stop: 1 #27ae60    /* 下面深绿色 */
+        stop: 0 #C8E6C9,   /* 上面亮绿色 */
+        stop: 1 #C8E6C9    /* 下面深绿色 */
     );
     border-radius: 12px;
     border: 1px solid #1e8449;
@@ -160,6 +160,40 @@
     qproperty-alignment: AlignCenter; /* 居中对齐 */
 }
 
+#mqttStatusLabel{
+    color: #000000;                   /* 白色字体，更醒目 */
+    font-family: "Segoe UI", "Microsoft YaHei", "Arial", sans-serif; /* 现代、清晰字体 */
+    font-size: 18px;                  /* 字号加大 */
+    font-weight: 700;                 /* 加粗 */
+    qproperty-alignment: AlignCenter; /* 居中对齐 */
+}
+
+
+
+/* connectMqtt 默认状态：未连接 */
+#connectMqtt {
+    background-color: #f44336; /* 红色 */
+    color: #000000;            /* 黑色文字 */
+    border-radius: 10px;
+    font-size: 16px;
+    min-width: 100px;    max-width: 100px;
+    min-height: 40px;    max-height: 40px;
+}
+
+/* connectMqtt 被按下或 checkable 被选中：已连接 */
+#connectMqtt:checked {
+    background-color: #4CAF50; /* 绿色 */
+    color: white;
+}
+
+/* 鼠标按下时 */
+#connectMqtt:pressed {
+    background-color: #da190b; /* 深红色，未连接状态按下 */
+}
+
+#connectMqtt:checked:pressed {
+    background-color: #45A049; /* 深绿色，已连接状态按下 */
+}
 
 
 /* 控制面板底色 - 半透明渐变 */

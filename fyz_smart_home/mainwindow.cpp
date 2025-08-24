@@ -15,10 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // 在 MainWindow 构造函数里初始化
-    mqttTestTimer = new QTimer(this);
-    testCounter = 0;
-    startMQTTSendTest();
+    // 初始化模块
+    controlModule = new ControlModule(this);
+    mqttModule = new MqttModule(this);
+    mqttConnected = false;
+
 
     // 左侧边栏相关定义
     ui->left_widget->setObjectName("left_widget");
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->messagewidget->setObjectName("messageWidget");
     ui->controlwidget->setObjectName("controlWidget");
 
+    ui->mqttStatusLabel->setObjectName("mqttStatusLabel");
     ui->label_broker->setObjectName("LabelBroker");
     ui->label_port->setObjectName("LabelPort");
     ui->label_client_id->setObjectName("LabelClientID");
@@ -41,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->label_password->setObjectName("LabelPassword");
     ui->label_Pub->setObjectName("LabelPub");
     ui->label_Sub->setObjectName("LabelSub");
+
+    ui->connectMqttButton->setObjectName("connectMqtt");
     /*mqtt控制界面相关定义*/
     ui->ledBtn->setObjectName("ledBtn");
     ui->fanBtn->setObjectName("fanBtn");
@@ -53,7 +57,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->alram_label->setText("ALARM OFF");
     ui->fan_label->setText("ALARM OFF");
 
-
     /*设置setCheckable是否有效*/
     ui->statusBtn->setCheckable(true);
     ui->mqttBtn->setCheckable(true);
@@ -63,14 +66,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->fanBtn->setCheckable(true);
     ui->alarmBtn->setCheckable(true);
 
-//    ui->left_widget->setStyleSheet(
-//        "background-color: #2c2f4a;"
-//    );
-
-//    ui->statusBtn->setStyleSheet(
-//        "QPushButton { background-color: #3a3f5c; color: #fff; border-radius: 12px; min-height: 80px; }"
-//        "QPushButton:checked { background-color: #7c83c0; }"
-//    );
     // 设置statusBtn为默认选中状态
     ui->statusBtn->setChecked(false);
     ui->mqttBtn->setChecked(false);
@@ -85,51 +80,43 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("MQTT 智能家居控制中心");
     this->setWindowIcon(QIcon(":/src/window.png"));
 
-    /*MQTT相关*/
+    ui->connectMqttButton->setCheckable(true);  // 设置按钮可切换状态
+    ui->connectMqttButton->setText("连接服务器");
 
+    /*MQTT相关*/
     ui->connectlabel->setPixmap(QPixmap(":/src/switch_off.png"));
     ui->mqttStatusLabel->setText("服务器未连接!");
 
+    // UI 与 ControlModule 信号槽连接
+    connect(controlModule, &ControlModule::ledStateChanged, this, [=](bool on){
+        ui->led_label->setText(on ? "LED ON" : "LED OFF");
+        ui->ledBtn->setChecked(on);
+        ui->ledBtn->setIcon(QIcon(on ? ":/src/light_on.png" : ":/src/light_off.png"));
+        /*具体硬件部分待实现*/
+    });
+    connect(controlModule, &ControlModule::fanStateChanged, this, [=](bool on){
+        ui->fan_label->setText(on ? "FAN ON" : "FAN OFF");
+        ui->fanBtn->setChecked(on);
+        ui->fanBtn->setIcon(QIcon(on ? ":/src/fan_on.png" : ":/src/fan_off.png"));
+        /*具体硬件部分待实现*/
+    });
+    connect(controlModule, &ControlModule::alarmStateChanged, this, [=](bool on){
+        ui->alram_label->setText(on ? "ALARM ON" : "ALARM OFF");
+        ui->alarmBtn->setChecked(on);
+        ui->alarmBtn->setIcon(QIcon(on ? ":/src/alarm_on.png" : ":/src/alarm_off.png"));
+        /*具体硬件部分待实现*/
+    });
 
-    m_client = new QMqttClient(this);           // 创建一个 MQTT 客户端对象，父对象为 MainWindow
-    m_client->setHostname("broker.emqx.io");        // 设置 MQTT 服务器的主机地址（这里是broker.emqx.io）
-    ui->lineEdit_Broker->setText("broker.emqx.io");
-    QString brokerAddr = ui->lineEdit_Broker->text();       // 从 lineEdit 取出文本
-    QString log = QString("服务器地址: %1").arg(brokerAddr);    // 拼接成日志字符串
-    ui->textEditMessage->append(log);    // 追加到 textEdit
-    m_client->setPort(1883);    // 设置 MQTT 服务器的端口号（默认 1883）
-    ui->lineEdit_Port->setText("1883");
-    ui->lineEdit_Broker->setText("broker.emqx.io");
-    brokerAddr = ui->lineEdit_Broker->text();    // 从 lineEdit 取出文本
-    log = QString("服务器端口: %1").arg(brokerAddr);    // 拼接成日志字符串
-    ui->textEditMessage->append(log);    // 追加到 textEdit
+    // UI 与 MqttModule 信号槽连接
+    connect(mqttModule, &MqttModule::messageReceived, this, &MainWindow::updateMQTTMessage);
+    connect(mqttModule, &MqttModule::stateChanged, this, &MainWindow::updateMQTTState);
+    connect(mqttModule, &MqttModule::signal_publishMessage, this, &MainWindow::updateMQTTPubMessage);
 
-
-    // 尝试连接到 MQTT 服务器
-    m_client->connectToHost();
-    ui->textEditMessage->append("start mqtt 服务器连接!");
-
-
-    // 当客户端成功连接到 MQTT Broker 时，触发 brokerConnected 槽函数
-    connect(m_client, &QMqttClient::connected, this, &MainWindow::brokerConnected);
-    // 当客户端状态发生变化时，触发 updateLogStateChange 槽函数
-    // 例如：正在连接、已连接、断开等状态
-    connect(m_client, &QMqttClient::stateChanged, this, &MainWindow::updateLogStateChange);
-    // 当客户端断开连接时，触发 brokerDisconnected 槽函数
-    connect(m_client, &QMqttClient::disconnected, this, &MainWindow::brokerDisconnected);
-
-    // 构造函数中连接一次
-    connect(m_client, &QMqttClient::messageReceived, this, &MainWindow::receiveMess);
-
-    // 当客户端收到 Broker 的 PING 响应时执行 Lambda 函数
-    // 用于检测连接是否保持活跃（心跳机制）
-    connect(m_client, &QMqttClient::pingResponseReceived, this, []() {
-    const QString content = QDateTime::currentDateTime().toString()
-        + QLatin1String(" PingResponse")
-        + QLatin1Char('\n');
-    qDebug() << content;
-});
-
+    // MQTT 连接
+    mqttModule->connectToBroker("broker.emqx.io", 1883);
+    QString str = QString("服务器开始连接! Broker: %1, Port: %2").arg("broker.emqx.io").arg(1883);
+    ui->textEditMessage->append(str);
+    mqttModule->startTestPublish(5000); // 5 秒测试发送
 }
 
 MainWindow::~MainWindow()
@@ -155,122 +142,76 @@ void MainWindow::paintEvent(QPaintEvent *event)
     QMainWindow::paintEvent(event);
 }
 
-void MainWindow::MyMQTTSubscribe(QString str)
-{
-    auto subscription = m_client->subscribe(str, 0);
-    if (!subscription) {
-        qDebug() << "Could not subscribe. Is there a valid connection?";
-        ui->textEditMessage->append("Could not subscribe. Is there a valid connection?");
-        return;
-    }
-}
-
-void MainWindow::updateLogStateChange()
-{
-    const QString content = QDateTime::currentDateTime().toString()
-                    + QLatin1String(": State Change")
-                    + QString::number(m_client->state())
-                    + QLatin1Char('\n');
-    ui->textEditMessage->append(content);
-    qDebug() << content;
-
-    if (m_client->state() == QMqttClient::Connected) {
-        ui->mqttStatusLabel->setText("服务器已连接!");
-        ui->connectlabel->setPixmap(QPixmap(":/src/switch_on.png"));
-    } else {
-        ui->mqttStatusLabel->setText("服务器未连接!");
-        ui->connectlabel->setPixmap(QPixmap(":/src/switch_off.png"));
-    }
-
-}
-
-void MainWindow::brokerConnected()
-{
-    qDebug() << "Connected!";
-    ui->textEditMessage->append("Connected!");
-    if(m_client->state() == QMqttClient::Connected){
-        m_client->subscribe(QString(MQTT_AUTO_TOPIC), 0);
-    }
-}
-
-void MainWindow::brokerDisconnected()
-{
-    qDebug() << "server Disconnected!";
-    ui->textEditMessage->append("server Disconnected!");
-
-    // 尝试连接到 MQTT 服务器
-    // 延迟重连，避免递归
-    QTimer::singleShot(1000, this, [this](){
-        if(m_client && m_client->state() == QMqttClient::Disconnected)
-            m_client->connectToHost();
-    });
-}
-
-void MainWindow::receiveMess(const QByteArray &message, const QMqttTopicName &topic)
-{
-   QString content;
-   content = QDateTime::currentDateTime().toString() + QLatin1Char('\n');
-   content += QLatin1String(" Received Topic: ") + topic.name() + QLatin1Char('\n');
-   content += QLatin1String(" Message: ") + message + QLatin1Char('\n');
-   ui->textEditMessage->append(content);
-   ui->TextEdit_Sub->append(content);
-   qDebug() << content;
-}
-
-void MainWindow::MyMQTTSendMessage(const QString topic, const QString message)
-{
-    if (m_client->publish(topic, message.toUtf8()) == -1){
-        qDebug() << "Could not publish message";
-        ui->textEditMessage->append("Could not publish message");
-    }
-}
-
-
 void MainWindow::on_ledBtn_clicked(bool checked)
 {
-    ui->ledBtn->setIcon(QIcon(checked ? ":/src/light_on.png" : ":/src/light_off.png"));
-    ui->led_label->setText(checked ? "LED ON" : "LED OFF");
-}
-
-
-void MainWindow::on_alarmBtn_clicked(bool checked)
-{
-
-    ui->alarmBtn->setIcon(QIcon(checked ? ":/src/alarm_on.png" : ":/src/alarm_off.png"));
-    ui->alram_label->setText(checked ? "ALARM ON" : "ALARM OFF");
+    controlModule->setLed(checked);
 }
 
 void MainWindow::on_fanBtn_clicked(bool checked)
 {
-    ui->fanBtn->setIcon(QIcon(checked ? ":/src/fan_on.png" : ":/src/fan_off.png"));
-    ui->fan_label->setText(checked ? "FAN ON" : "FAN OFF");
+    controlModule->setFan(checked);
+}
+
+void MainWindow::on_alarmBtn_clicked(bool checked)
+{
+    controlModule->setAlarm(checked);
 }
 
 
-// 定时发送槽函数
-void MainWindow::sendTestMessage()
+void MainWindow::updateMQTTMessage(const QString &topic, const QByteArray &msg)
 {
-    if (!m_client || m_client->state() != QMqttClient::Connected) {
-        qDebug() << "MQTT not connected!";
-        return;
-    }
+    QString content = QString("[%1] Topic: %2 Message: %3")
+                        .arg(QDateTime::currentDateTime().toString())
+                        .arg(topic)
+                        .arg(QString(msg));
+    ui->textEditMessage->append(content);
+    ui->TextEdit_Sub->append(content);
+    qDebug() << content;
+}
 
-    QString topic = "fyz/123/test";
-    QString message = QString("Test message #%1").arg(testCounter++);
 
-    if (m_client->publish(topic, message.toUtf8()) == -1) {
-        qDebug() << "Could not publish message";
-        ui->textEditMessage->append("Could not publish message");
+void MainWindow::updateMQTTPubMessage(QString topic, QString payload)
+{
+    ui->TextEdit_Pub->append(topic);
+    ui->TextEdit_Pub->append(payload);
+}
+
+void MainWindow::updateMQTTSubMessage(QString topic, QString payload)
+{
+    ui->TextEdit_Pub->append(topic);
+    ui->TextEdit_Pub->append(payload);
+}
+
+
+void MainWindow::updateMQTTState(QMqttClient::ClientState state)
+{
+    if(state == QMqttClient::Connected){
+        ui->textEditMessage->append("服务器已连接!");
+        ui->mqttStatusLabel->setText("服务器已连接!");
+        ui->connectlabel->setPixmap(QPixmap(":/src/switch_on.png"));
     } else {
-        qDebug() << "Published:" << message;
-        ui->textEditMessage->append("Published: " + message);
+        ui->textEditMessage->append("服务器断开!");
+        ui->mqttStatusLabel->setText("服务器未连接!");
+        ui->connectlabel->setPixmap(QPixmap(":/src/switch_off.png"));
     }
 }
 
-// 启动定时器函数
-void MainWindow::startMQTTSendTest()
-{
-    connect(mqttTestTimer, &QTimer::timeout, this, &MainWindow::sendTestMessage);
-    mqttTestTimer->start(5000); // 每 5 秒触发一次
-}
 
+void MainWindow::on_connectMqttButton_clicked(bool checked)
+{
+    (void)checked;  // 防止 unused parameter 警告
+    if (!mqttConnected) {
+        // 获取界面输入的服务器信息
+        QString host = ui->lineEdit_Broker->text();
+        quint16 port = ui->lineEdit_Port->text().toUShort();
+
+        mqttModule->connectToBroker(host, port);
+//        mqttModule->connectToBroker(host, port, ui->lineEdit_Broker, ui->lineEdit_Port, ui->textEditMessage);
+        mqttConnected = true;
+        ui->connectMqttButton->setText("断开连接");
+    } else {
+        mqttModule->disconnected();
+        mqttConnected = false;
+        ui->connectMqttButton->setText("连接服务器");
+    }
+}

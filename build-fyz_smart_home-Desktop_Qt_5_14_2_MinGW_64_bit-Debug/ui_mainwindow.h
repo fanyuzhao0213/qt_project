@@ -44,6 +44,8 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QLabel *connectlabel;
     QSpacerItem *horizontalSpacer;
+    QPushButton *connectMqttButton;
+    QSpacerItem *horizontalSpacer_3;
     QWidget *messagewidget;
     QHBoxLayout *horizontalLayout;
     QWidget *loginwidget;
@@ -162,6 +164,15 @@ public:
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_2->addItem(horizontalSpacer);
+
+        connectMqttButton = new QPushButton(statuswidget);
+        connectMqttButton->setObjectName(QString::fromUtf8("connectMqttButton"));
+
+        horizontalLayout_2->addWidget(connectMqttButton);
+
+        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_3);
 
 
         verticalLayout_4->addWidget(statuswidget);
@@ -366,6 +377,7 @@ public:
         uartBtn->setText(QCoreApplication::translate("MainWindow", "\351\200\232\344\277\241", nullptr));
         mqttStatusLabel->setText(QCoreApplication::translate("MainWindow", "\346\234\215\345\212\241\345\231\250\346\234\252\350\277\236\346\216\245", nullptr));
         connectlabel->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
+        connectMqttButton->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
         label_broker->setText(QCoreApplication::translate("MainWindow", "Broker", nullptr));
         label_port->setText(QCoreApplication::translate("MainWindow", "Port", nullptr));
         label_client_id->setText(QCoreApplication::translate("MainWindow", "ClientID", nullptr));

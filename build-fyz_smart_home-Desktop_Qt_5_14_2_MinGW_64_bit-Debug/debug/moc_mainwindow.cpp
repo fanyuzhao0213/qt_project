@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[11];
-    char stringdata0[159];
+    QByteArrayData data[16];
+    char stringdata0[230];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,23 +33,30 @@ struct qt_meta_stringdata_MainWindow_t {
 static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
     {
 QT_MOC_LITERAL(0, 0, 10), // "MainWindow"
-QT_MOC_LITERAL(1, 11, 15), // "brokerConnected"
-QT_MOC_LITERAL(2, 27, 0), // ""
-QT_MOC_LITERAL(3, 28, 20), // "updateLogStateChange"
-QT_MOC_LITERAL(4, 49, 18), // "brokerDisconnected"
-QT_MOC_LITERAL(5, 68, 11), // "receiveMess"
-QT_MOC_LITERAL(6, 80, 14), // "QMqttTopicName"
-QT_MOC_LITERAL(7, 95, 17), // "on_ledBtn_clicked"
-QT_MOC_LITERAL(8, 113, 7), // "checked"
-QT_MOC_LITERAL(9, 121, 19), // "on_alarmBtn_clicked"
-QT_MOC_LITERAL(10, 141, 17) // "on_fanBtn_clicked"
+QT_MOC_LITERAL(1, 11, 17), // "on_ledBtn_clicked"
+QT_MOC_LITERAL(2, 29, 0), // ""
+QT_MOC_LITERAL(3, 30, 7), // "checked"
+QT_MOC_LITERAL(4, 38, 17), // "on_fanBtn_clicked"
+QT_MOC_LITERAL(5, 56, 19), // "on_alarmBtn_clicked"
+QT_MOC_LITERAL(6, 76, 17), // "updateMQTTMessage"
+QT_MOC_LITERAL(7, 94, 5), // "topic"
+QT_MOC_LITERAL(8, 100, 3), // "msg"
+QT_MOC_LITERAL(9, 104, 20), // "updateMQTTPubMessage"
+QT_MOC_LITERAL(10, 125, 7), // "payload"
+QT_MOC_LITERAL(11, 133, 20), // "updateMQTTSubMessage"
+QT_MOC_LITERAL(12, 154, 15), // "updateMQTTState"
+QT_MOC_LITERAL(13, 170, 24), // "QMqttClient::ClientState"
+QT_MOC_LITERAL(14, 195, 5), // "state"
+QT_MOC_LITERAL(15, 201, 28) // "on_connectMqttButton_clicked"
 
     },
-    "MainWindow\0brokerConnected\0\0"
-    "updateLogStateChange\0brokerDisconnected\0"
-    "receiveMess\0QMqttTopicName\0on_ledBtn_clicked\0"
-    "checked\0on_alarmBtn_clicked\0"
-    "on_fanBtn_clicked"
+    "MainWindow\0on_ledBtn_clicked\0\0checked\0"
+    "on_fanBtn_clicked\0on_alarmBtn_clicked\0"
+    "updateMQTTMessage\0topic\0msg\0"
+    "updateMQTTPubMessage\0payload\0"
+    "updateMQTTSubMessage\0updateMQTTState\0"
+    "QMqttClient::ClientState\0state\0"
+    "on_connectMqttButton_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -59,7 +66,7 @@ static const uint qt_meta_data_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -67,22 +74,24 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   49,    2, 0x0a /* Public */,
-       3,    0,   50,    2, 0x0a /* Public */,
-       4,    0,   51,    2, 0x0a /* Public */,
-       5,    2,   52,    2, 0x0a /* Public */,
-       7,    1,   57,    2, 0x08 /* Private */,
-       9,    1,   60,    2, 0x08 /* Private */,
-      10,    1,   63,    2, 0x08 /* Private */,
+       1,    1,   54,    2, 0x0a /* Public */,
+       4,    1,   57,    2, 0x0a /* Public */,
+       5,    1,   60,    2, 0x0a /* Public */,
+       6,    2,   63,    2, 0x0a /* Public */,
+       9,    2,   68,    2, 0x0a /* Public */,
+      11,    2,   73,    2, 0x0a /* Public */,
+      12,    1,   78,    2, 0x0a /* Public */,
+      15,    1,   81,    2, 0x08 /* Private */,
 
  // slots: parameters
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::QByteArray, 0x80000000 | 6,    2,    2,
-    QMetaType::Void, QMetaType::Bool,    8,
-    QMetaType::Void, QMetaType::Bool,    8,
-    QMetaType::Void, QMetaType::Bool,    8,
+    QMetaType::Void, QMetaType::Bool,    3,
+    QMetaType::Void, QMetaType::Bool,    3,
+    QMetaType::Void, QMetaType::Bool,    3,
+    QMetaType::Void, QMetaType::QString, QMetaType::QByteArray,    7,    8,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString,    7,   10,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString,    7,   10,
+    QMetaType::Void, 0x80000000 | 13,   14,
+    QMetaType::Void, QMetaType::Bool,    3,
 
        0        // eod
 };
@@ -93,23 +102,24 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         auto *_t = static_cast<MainWindow *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->brokerConnected(); break;
-        case 1: _t->updateLogStateChange(); break;
-        case 2: _t->brokerDisconnected(); break;
-        case 3: _t->receiveMess((*reinterpret_cast< const QByteArray(*)>(_a[1])),(*reinterpret_cast< const QMqttTopicName(*)>(_a[2]))); break;
-        case 4: _t->on_ledBtn_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 5: _t->on_alarmBtn_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 6: _t->on_fanBtn_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 0: _t->on_ledBtn_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 1: _t->on_fanBtn_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 2: _t->on_alarmBtn_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 3: _t->updateMQTTMessage((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QByteArray(*)>(_a[2]))); break;
+        case 4: _t->updateMQTTPubMessage((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
+        case 5: _t->updateMQTTSubMessage((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
+        case 6: _t->updateMQTTState((*reinterpret_cast< QMqttClient::ClientState(*)>(_a[1]))); break;
+        case 7: _t->on_connectMqttButton_clicked((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 3:
+        case 6:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-            case 1:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QMqttTopicName >(); break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QMqttClient::ClientState >(); break;
             }
             break;
         }
@@ -145,13 +155,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     }
     return _id;
 }
