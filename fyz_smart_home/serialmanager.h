@@ -74,10 +74,15 @@ public slots:
 signals:
     // ================= 信号 =================
     void dataReceived(const QByteArray &data);    // 接收到串口数据
-    void errorOccurred(const QString &errorMsg); // 串口错误信息
+    void errorOccurred(const QString &errorMsg);  // 串口错误信息
     void serialOpened();                          // 串口成功打开
     void serialClosed();                          // 串口关闭
     void portListUpdated(const QStringList &ports); // 扫描到的串口列表
+
+    // 发送给 MainWindow，用于在界面显示发送的数据
+    // 参数：data - 要显示的数据
+    //        isHex - 是否以 HEX 模式显示
+    void dataToSendToMainWindow(const QByteArray &data, bool isHex);
 
 private slots:
     /**

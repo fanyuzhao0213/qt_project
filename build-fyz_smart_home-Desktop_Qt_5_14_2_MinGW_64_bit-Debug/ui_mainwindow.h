@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
@@ -98,7 +99,6 @@ public:
     QPushButton *fanBtn;
     QLabel *fan_label;
     QWidget *uartwidget;
-    QVBoxLayout *verticalLayout_11;
     QVBoxLayout *verticalLayout_10;
     QHBoxLayout *horizontalLayout_16;
     QWidget *widget_3;
@@ -131,18 +131,27 @@ public:
     QLabel *label_7;
     QComboBox *comboBox_revmode;
     QWidget *widget_4;
-    QVBoxLayout *verticalLayout_9;
+    QVBoxLayout *verticalLayout_11;
     QGroupBox *groupBox_4;
     QHBoxLayout *horizontalLayout_13;
     QTextBrowser *textBrowser_rev;
     QGroupBox *groupBox_5;
+    QVBoxLayout *verticalLayout_9;
+    QTextEdit *textEdit_serialsend;
     QHBoxLayout *horizontalLayout_14;
-    QTextBrowser *textBrowser_send;
+    QSpacerItem *horizontalSpacer_18;
+    QPushButton *serial_clearsendBtn;
+    QSpacerItem *horizontalSpacer_16;
+    QPushButton *serial_sendBtn;
+    QSpacerItem *horizontalSpacer_19;
     QWidget *widget_2;
     QHBoxLayout *horizontalLayout_15;
     QSpacerItem *horizontalSpacer_4;
-    QPushButton *serial_sendBtn;
-    QPushButton *serial_clearsendBtn;
+    QCheckBox *checkBox_uarttimesend;
+    QLabel *label_8;
+    QLineEdit *lineEdit_uarttime;
+    QLabel *label_10;
+    QSpacerItem *horizontalSpacer_17;
     QPushButton *serial_clearrevBtn;
     QSpacerItem *horizontalSpacer_5;
     QWidget *widget_5;
@@ -152,7 +161,6 @@ public:
     QSpacerItem *horizontalSpacer_6;
     QPushButton *pushButton_2;
     QSpacerItem *horizontalSpacer_7;
-    QLabel *label_9;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -170,7 +178,7 @@ public:
         centralwidget->setSizePolicy(sizePolicy);
         left_widget = new QWidget(centralwidget);
         left_widget->setObjectName(QString::fromUtf8("left_widget"));
-        left_widget->setGeometry(QRect(0, 0, 100, 800));
+        left_widget->setGeometry(QRect(0, 0, 100, 790));
         QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(100);
         sizePolicy1.setVerticalStretch(0);
@@ -197,7 +205,7 @@ public:
 
         cloudWidget = new QWidget(centralwidget);
         cloudWidget->setObjectName(QString::fromUtf8("cloudWidget"));
-        cloudWidget->setGeometry(QRect(100, 0, 500, 800));
+        cloudWidget->setGeometry(QRect(100, 0, 500, 790));
         QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
@@ -482,9 +490,7 @@ public:
 
         uartwidget = new QWidget(controlwidget);
         uartwidget->setObjectName(QString::fromUtf8("uartwidget"));
-        verticalLayout_11 = new QVBoxLayout(uartwidget);
-        verticalLayout_11->setObjectName(QString::fromUtf8("verticalLayout_11"));
-        verticalLayout_10 = new QVBoxLayout();
+        verticalLayout_10 = new QVBoxLayout(uartwidget);
         verticalLayout_10->setObjectName(QString::fromUtf8("verticalLayout_10"));
         horizontalLayout_16 = new QHBoxLayout();
         horizontalLayout_16->setObjectName(QString::fromUtf8("horizontalLayout_16"));
@@ -653,9 +659,8 @@ public:
 
         widget_4 = new QWidget(uartwidget);
         widget_4->setObjectName(QString::fromUtf8("widget_4"));
-        verticalLayout_9 = new QVBoxLayout(widget_4);
-        verticalLayout_9->setObjectName(QString::fromUtf8("verticalLayout_9"));
-        verticalLayout_9->setContentsMargins(2, 2, 2, 2);
+        verticalLayout_11 = new QVBoxLayout(widget_4);
+        verticalLayout_11->setObjectName(QString::fromUtf8("verticalLayout_11"));
         groupBox_4 = new QGroupBox(widget_4);
         groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
         horizontalLayout_13 = new QHBoxLayout(groupBox_4);
@@ -667,51 +672,93 @@ public:
         horizontalLayout_13->addWidget(textBrowser_rev);
 
 
-        verticalLayout_9->addWidget(groupBox_4);
+        verticalLayout_11->addWidget(groupBox_4);
 
         groupBox_5 = new QGroupBox(widget_4);
         groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
-        horizontalLayout_14 = new QHBoxLayout(groupBox_5);
+        groupBox_5->setMaximumSize(QSize(16777215, 300));
+        verticalLayout_9 = new QVBoxLayout(groupBox_5);
+        verticalLayout_9->setObjectName(QString::fromUtf8("verticalLayout_9"));
+        textEdit_serialsend = new QTextEdit(groupBox_5);
+        textEdit_serialsend->setObjectName(QString::fromUtf8("textEdit_serialsend"));
+
+        verticalLayout_9->addWidget(textEdit_serialsend);
+
+        horizontalLayout_14 = new QHBoxLayout();
         horizontalLayout_14->setObjectName(QString::fromUtf8("horizontalLayout_14"));
-        horizontalLayout_14->setContentsMargins(5, 5, 5, 5);
-        textBrowser_send = new QTextBrowser(groupBox_5);
-        textBrowser_send->setObjectName(QString::fromUtf8("textBrowser_send"));
+        horizontalSpacer_18 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
-        horizontalLayout_14->addWidget(textBrowser_send);
+        horizontalLayout_14->addItem(horizontalSpacer_18);
+
+        serial_clearsendBtn = new QPushButton(groupBox_5);
+        serial_clearsendBtn->setObjectName(QString::fromUtf8("serial_clearsendBtn"));
+
+        horizontalLayout_14->addWidget(serial_clearsendBtn);
+
+        horizontalSpacer_16 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_14->addItem(horizontalSpacer_16);
+
+        serial_sendBtn = new QPushButton(groupBox_5);
+        serial_sendBtn->setObjectName(QString::fromUtf8("serial_sendBtn"));
+
+        horizontalLayout_14->addWidget(serial_sendBtn);
+
+        horizontalSpacer_19 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_14->addItem(horizontalSpacer_19);
 
 
-        verticalLayout_9->addWidget(groupBox_5);
+        verticalLayout_9->addLayout(horizontalLayout_14);
+
+
+        verticalLayout_11->addWidget(groupBox_5);
 
         widget_2 = new QWidget(widget_4);
         widget_2->setObjectName(QString::fromUtf8("widget_2"));
         horizontalLayout_15 = new QHBoxLayout(widget_2);
         horizontalLayout_15->setObjectName(QString::fromUtf8("horizontalLayout_15"));
         horizontalLayout_15->setContentsMargins(5, 5, 5, 5);
-        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer_4 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_15->addItem(horizontalSpacer_4);
 
-        serial_sendBtn = new QPushButton(widget_2);
-        serial_sendBtn->setObjectName(QString::fromUtf8("serial_sendBtn"));
+        checkBox_uarttimesend = new QCheckBox(widget_2);
+        checkBox_uarttimesend->setObjectName(QString::fromUtf8("checkBox_uarttimesend"));
 
-        horizontalLayout_15->addWidget(serial_sendBtn);
+        horizontalLayout_15->addWidget(checkBox_uarttimesend);
 
-        serial_clearsendBtn = new QPushButton(widget_2);
-        serial_clearsendBtn->setObjectName(QString::fromUtf8("serial_clearsendBtn"));
+        label_8 = new QLabel(widget_2);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
 
-        horizontalLayout_15->addWidget(serial_clearsendBtn);
+        horizontalLayout_15->addWidget(label_8);
+
+        lineEdit_uarttime = new QLineEdit(widget_2);
+        lineEdit_uarttime->setObjectName(QString::fromUtf8("lineEdit_uarttime"));
+        lineEdit_uarttime->setMaximumSize(QSize(40, 16777215));
+
+        horizontalLayout_15->addWidget(lineEdit_uarttime);
+
+        label_10 = new QLabel(widget_2);
+        label_10->setObjectName(QString::fromUtf8("label_10"));
+
+        horizontalLayout_15->addWidget(label_10);
+
+        horizontalSpacer_17 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_15->addItem(horizontalSpacer_17);
 
         serial_clearrevBtn = new QPushButton(widget_2);
         serial_clearrevBtn->setObjectName(QString::fromUtf8("serial_clearrevBtn"));
 
         horizontalLayout_15->addWidget(serial_clearrevBtn);
 
-        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer_5 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_15->addItem(horizontalSpacer_5);
 
 
-        verticalLayout_9->addWidget(widget_2);
+        verticalLayout_11->addWidget(widget_2);
 
 
         horizontalLayout_16->addWidget(widget_4);
@@ -747,15 +794,6 @@ public:
 
 
         verticalLayout_10->addWidget(widget_5);
-
-
-        verticalLayout_11->addLayout(verticalLayout_10);
-
-        label_9 = new QLabel(uartwidget);
-        label_9->setObjectName(QString::fromUtf8("label_9"));
-        label_9->setAlignment(Qt::AlignCenter);
-
-        verticalLayout_11->addWidget(label_9);
 
 
         verticalLayout_12->addWidget(uartwidget);
@@ -836,12 +874,15 @@ public:
 
         groupBox_4->setTitle(QCoreApplication::translate("MainWindow", "\346\216\245\346\224\266\345\214\272", nullptr));
         groupBox_5->setTitle(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\345\214\272", nullptr));
+        serial_clearsendBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\347\251\272\345\217\221\351\200\201", nullptr));
         serial_sendBtn->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201", nullptr));
-        serial_clearsendBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\347\251\272\345\217\221\351\200\201\345\214\272", nullptr));
+        checkBox_uarttimesend->setText(QCoreApplication::translate("MainWindow", "\345\256\232\346\227\266\345\217\221\351\200\201", nullptr));
+        label_8->setText(QCoreApplication::translate("MainWindow", "\345\221\250\346\234\237\357\274\232", nullptr));
+        lineEdit_uarttime->setText(QCoreApplication::translate("MainWindow", "1000", nullptr));
+        label_10->setText(QCoreApplication::translate("MainWindow", "MS", nullptr));
         serial_clearrevBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\347\251\272\346\216\245\346\224\266\345\214\272", nullptr));
         pushButton->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
         pushButton_2->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
-        label_9->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\346\250\241\345\274\217", nullptr));
     } // retranslateUi
 
 };

@@ -31,6 +31,7 @@ public slots:
     void updateMQTTPubMessage(QString topic, QString payload);
     void updateMQTTSubMessage(QString topic, QString payload);
     void updateMQTTState(QMqttClient::ClientState state);
+    void onSerialDataToSend(const QByteArray &data, bool isHex);
 
 protected:
     void paintEvent(QPaintEvent *event) override; // 重写 paintEvent
@@ -45,6 +46,12 @@ private slots:
 
     void on_clearMsgBtn_clicked();
 
+    void on_serial_sendBtn_clicked();
+
+    void on_serial_clearsendBtn_clicked();
+
+    void on_serial_clearrevBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -52,6 +59,8 @@ private:
     MqttModule *mqttModule;
     bool mqttConnected;
     serialmanager *serialMgr;
+
+    QTimer *sendTimer; // 定时发送定时器
 };
 
 #endif // MAINWINDOW_H

@@ -1,18 +1,19 @@
 #include "serialmanager.h"
+#include <QComboBox>
 #include <QDebug>
 #include <QThread>
-
 
 serialmanager::serialmanager(QObject *parent) : QObject(parent)
 {
     serial = new QSerialPort(this);
     g_scanTimer = new QTimer(this);
 
-
-    connect(g_scanTimer, &QTimer::timeout, this, &serialmanager::scanPorts);
     connect(serial, &QSerialPort::errorOccurred, this, &serialmanager::handleError);
+    connect(serial, &QSerialPort::readyRead, this, &serialmanager::readSerialData);
+    // 延迟调用，保证 MainWindow 已经初始化完成
+    QTimer::singleShot(0, this, &serialmanager::scanPorts);
 
-    g_scanTimer->start(500);  // 默认500ms扫描一次可用串口
+//    g_scanTimer->start(1000);  // 默认2000ms扫描一次可用串口
 }
 serialmanager::~serialmanager()
 {
@@ -33,6 +34,7 @@ bool serialmanager::openSerial(const QString &portName, int baudRate)
 
     if (serial->open(QIODevice::ReadWrite)) {
         qDebug() << "openSerial success!";
+        g_scanTimer->stop();
         emit serialOpened();
         return true;
     } else {
@@ -47,7 +49,7 @@ void serialmanager::closeSerial()
 {
     if (serial->isOpen()) {
         serial->close();
-        g_scanTimer->stop();
+        g_scanTimer->start();
         emit serialClosed();
     }
 }
@@ -60,10 +62,32 @@ bool serialmanager::isOpen() const
 // 发送数据
 void serialmanager::sendData(const QByteArray &data)
 {
+    bool isHex = false;
     if (serial->isOpen())
+    {
+        // 1️⃣ 写入串口
         serial->write(data);
+
+        // 2️⃣ 判断当前发送模式：文本模式还是 HEX 模式
+        //parent() 返回的就是 MainWindow 对象
+        if (parent())
+        {
+            // 通过 parent() 获取 MainWindow 下的 comboBox_sendMode
+            QComboBox *modeCombo = parent()->findChild<QComboBox*>("comboBox_revmode");
+
+            if (modeCombo && modeCombo->currentText() == "HEX模式") {
+                isHex = true; // 用户选择了 HEX 模式
+            }
+        }
+
+        // 3️⃣ 发信号给 MainWindow，让界面显示发送的数据
+        emit dataToSendToMainWindow(data, isHex);
+    }
     else
+    {
         emit errorOccurred("串口未打开，无法发送数据");
+    }
+
 }
 
 // 设置读取间隔
@@ -71,7 +95,6 @@ void serialmanager::setReadInterval(int ms)
 {
     g_scanTimer->setInterval(ms);
 }
-
 
 // 定时读取串口数据
 void serialmanager::readSerialData()

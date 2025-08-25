@@ -370,10 +370,80 @@ QComboBox QAbstractItemView {
     font-weight: bold;                /* 加粗字体 */
 }
 
-/* 按钮按下或选中状态 */
-#openSerialBtn:checked {
-    background-color: #7c83c0;       /* 按下/选中状态颜色 */
+/* 未打开状态 - 绿色 */
+#openSerialBtn:!checked {
+    background-color: #4CAF50;       /* 绿色 - 表示可打开 */
 }
-#openSerialBtn:hover {
-    background-color: #5a5f7c;       /* 鼠标悬停状态颜色 */
+
+/* 已打开状态 - 红色 */
+#openSerialBtn:checked {
+    background-color: #F44336;       /* 红色 - 表示已打开，可关闭 */
+}
+
+
+/* ==== QPushButton 样式 ==== */
+/* 通用按钮样式 */
+.serial-action-btn {
+    color: #ffffff;
+    border-radius: 10px;
+    min-width: 110px;
+    max-width: 110px;
+    min-height: 32px;
+    max-height: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+/* 发送按钮 */
+#serial_sendBtn {
+    background-color: #7986cb;       /* 更淡的紫色 */
+}
+
+/* 清除接收按钮 */
+#serial_clearrevBtn {
+    background-color: #4db6ac;       /* 更淡的青绿色 */
+}
+
+/* 清除发送按钮 */
+#serial_clearsendBtn {
+    background-color: #ffb74d;       /* 更淡的橙色 */
+}
+
+/* 悬停效果 */
+#serial_sendBtn:hover { background-color: #9fa8da; }
+#serial_clearrevBtn:hover { background-color: #80cbc4; }
+#serial_clearsendBtn:hover { background-color: #ffcc80; }
+
+/* 按下效果 */
+#serial_sendBtn:pressed { background-color: #5c6bc0; }
+#serial_clearrevBtn:pressed { background-color: #26a69a; }
+#serial_clearsendBtn:pressed { background-color: #ffa726; }
+
+
+/* ==== QCheckBox 样式 ==== */
+checkBox_uarttimesend {
+    spacing: 5px;
+    font-weight: bold;
+}
+
+/* 禁用时复选框样式 */
+checkBox_uarttimesend::indicator:disabled {
+    background-color: #CCCCCC;
+}
+
+/* ==== QLineEdit 样式 ==== */
+#lineEdit_uarttime {
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    padding: 2px 4px;
+    background-color: #F0F0F0; /* 禁用时灰色 */
+}
+
+#textBrowser_rev {
+    background-color: black;
+    color: #00FF00;
+    font-family: Consolas;
+    font-size: 14px;
 }

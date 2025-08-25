@@ -6,6 +6,7 @@
 #include <qdebug.h>
 #include <QDateTime>
 #include <QTimer>
+#include <QMessageBox>
 
 #define MQTT_AUTO_TOPIC "fyz/123/#"
 
@@ -20,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     mqttModule = new MqttModule(this);
     mqttConnected = false;
     serialMgr = new serialmanager(this);
+    sendTimer = new QTimer(this);
+
 
     // 左侧边栏相关定义
     ui->left_widget->setObjectName("left_widget");
@@ -74,10 +77,28 @@ MainWindow::MainWindow(QWidget *parent)
     ui->comboBox_revmode->setObjectName("comboBox_revmode");
     ui->openSerialBtn->setObjectName("openSerialBtn");
 
+    ui->serial_sendBtn->setObjectName("serial_sendBtn");
+    ui->serial_clearrevBtn->setObjectName("serial_clearrevBtn");
+    ui->serial_clearsendBtn->setObjectName("serial_clearsendBtn");
+    ui->checkBox_uarttimesend->setObjectName("checkBox_uarttimesend");
+    ui->lineEdit_uarttime->setObjectName("lineEdit_uarttime");
+    ui->textBrowser_rev->setObjectName("textBrowser_rev");
+
+    // 设置默认选中项
+    ui->comboBox_uartnum->setCurrentIndex(0);
     ui->comboBox_baudrate->setCurrentIndex(1);
+    ui->comboBox_databit->setCurrentIndex(3); // 默认8位
     ui->comboBox_stopbit->setCurrentIndex(0);
     ui->comboBox_checkbit->setCurrentIndex(0);
-    ui->comboBox_databit->setCurrentIndex(0);
+
+    // ================= 初始状态 =================
+    // 串口未打开，ComboBox可修改
+    ui->comboBox_uartnum->setEnabled(true);
+    ui->comboBox_baudrate->setEnabled(true);
+    ui->comboBox_databit->setEnabled(true);
+    ui->comboBox_stopbit->setEnabled(true);
+    ui->comboBox_checkbit->setEnabled(true);
+
 
     /*设置setCheckable是否有效*/
     ui->statusBtn->setCheckable(true);
@@ -87,6 +108,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->ledBtn->setCheckable(true);
     ui->fanBtn->setCheckable(true);
     ui->alarmBtn->setCheckable(true);
+    ui->openSerialBtn->setCheckable(true);
+    /*以下3个按钮不需要checked行为*/
+    ui->serial_sendBtn->setCheckable(false);
+    ui->serial_clearrevBtn->setCheckable(false);
+    ui->serial_clearsendBtn->setCheckable(false);
 
     // 设置statusBtn为默认选中状态
     ui->statusBtn->setChecked(false);
@@ -95,6 +121,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->ledBtn->setChecked(false);
     ui->fanBtn->setChecked(false);
     ui->alarmBtn->setChecked(false);
+
+
+    ui->openSerialBtn->setEnabled(true);       // 打开按钮默认可用
+    ui->serial_sendBtn->setEnabled(false);    // 发送按钮默认禁用
+    ui->serial_clearrevBtn->setEnabled(false);// 清除接收按钮默认禁用
+    ui->serial_clearsendBtn->setEnabled(false);// 清除发送按钮默认禁用
+    ui->checkBox_uarttimesend->setEnabled(false);
+    ui->lineEdit_uarttime->setEnabled(false);
 
     // 设置固定窗口大小
     this->setFixedSize(1280, 800);
@@ -134,22 +168,106 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mqttModule, &MqttModule::signal_publishMessage, this, &MainWindow::updateMQTTPubMessage);
 
 
-    // UI 与 uart 信号槽连接
-    connect(serialMgr, &serialmanager::dataReceived, this, [this](const QByteArray &data){
-        ui->textEditMessage->append("收到数据: " + QString(data));
+    // 构造函数中 uart 定时更新串口列表
+    connect(ui->comboBox_uartnum, &QComboBox::showPopup, this, [this]() {
+        qDebug() << "ComboBoxUart 被点击，开始扫描串口";
+        serialMgr->scanPorts(); // 调用 serialmanager 扫描
     });
 
+
+    // 将 serialmanager 的 dataReceived 信号连接到 lambda 函数
+    // 当串口接收到数据时，会触发这个槽函数
+    connect(serialMgr, &serialmanager::dataReceived, this, [this](const QByteArray &data){
+
+        // 获取 UI 上用于选择接收模式的 ComboBox（文本模式或 HEX 模式）
+        QComboBox *modeCombo = ui->comboBox_revmode;
+
+        // 判断用户是否选择了 HEX 模式，如果选择了就显示十六进制，否则显示文本
+        bool isHex = (modeCombo && modeCombo->currentText() == "HEX模式");
+
+        QString displayStr; // 用于存放最终要显示的字符串
+
+        if (isHex) {
+            // 如果是 HEX 模式，将接收到的 QByteArray 转成 HEX 字符串，每个字节用空格分隔，并转换成大写
+            displayStr = data.toHex(' ').toUpper();
+        } else {
+            // 如果是文本模式，将 QByteArray 按 UTF-8 编码转换为 QString
+            displayStr = QString::fromUtf8(data);
+        }
+
+        // 将显示内容插入到 QTextBrowser 末尾（累积显示，避免覆盖之前内容）
+        ui->textBrowser_rev->moveCursor(QTextCursor::End);      // 将光标移动到文本末尾
+        ui->textBrowser_rev->insertPlainText(displayStr);       // 插入内容，不自动换行
+        ui->textBrowser_rev->moveCursor(QTextCursor::End);      // 插入后再次移动光标到末尾，保证滚动到最新内容
+    });
+
+
     connect(serialMgr, &serialmanager::errorOccurred, this, [this](const QString &err){
-        ui->textEditMessage->append("串口错误: " + err);
+        QMessageBox::critical(this, "串口错误", err);
     });
 
     connect(serialMgr, &serialmanager::serialOpened, this, [this](){
+        ui->serial_sendBtn->setEnabled(true);    // 发送按钮使能
+        ui->serial_clearrevBtn->setEnabled(true);// 清除接收按钮使能
+        ui->serial_clearsendBtn->setEnabled(true);// 清除发送按钮使能
+        ui->checkBox_uarttimesend->setEnabled(true);
+        ui->lineEdit_uarttime->setEnabled(true);
+
+        // 串口打开后
+        ui->comboBox_uartnum->setEnabled(false);    // 禁用串口选择
+        ui->comboBox_baudrate->setEnabled(false);   // 禁用波特率选择
+        ui->comboBox_databit->setEnabled(false);    // 数据位
+        ui->comboBox_stopbit->setEnabled(false);    // 停止位
+        ui->comboBox_checkbit->setEnabled(false);   // 校验位
         ui->openSerialBtn->setText("关闭串口");
     });
 
     connect(serialMgr, &serialmanager::serialClosed, this, [this](){
+        ui->serial_sendBtn->setEnabled(false);    // 发送按钮默认禁用
+        ui->serial_clearrevBtn->setEnabled(false);// 清除接收按钮默认禁用
+        ui->serial_clearsendBtn->setEnabled(false);// 清除发送按钮默认禁用
+        ui->comboBox_uartnum->setEnabled(true);
+        ui->comboBox_baudrate->setEnabled(true);
+        ui->comboBox_databit->setEnabled(true);
+        ui->comboBox_stopbit->setEnabled(true);
+        ui->comboBox_checkbit->setEnabled(true);
+        ui->checkBox_uarttimesend->setEnabled(false);
+        ui->lineEdit_uarttime->setEnabled(false);
+
         ui->openSerialBtn->setText("打开串口");
     });
+
+    /*定时器控制发送，定时器由自动发送checkbox来控制*/
+    connect(sendTimer, &QTimer::timeout, this, &MainWindow::on_serial_sendBtn_clicked);
+    // 定时发送复选框控制
+    connect(ui->checkBox_uarttimesend, &QCheckBox::toggled, this, [=](bool checked){
+        if (!serialMgr->isOpen()) {
+            QMessageBox::warning(this, "错误", "串口未打开，无法启动定时发送");
+            ui->checkBox_uarttimesend->setChecked(false);
+            return;
+        }
+
+        if (checked) {
+            bool ok;
+            int interval = ui->lineEdit_uarttime->text().toInt(&ok); // 获取定时间隔(ms)
+            if (!ok || interval <= 0) {
+                QMessageBox::warning(this, "错误", "请输入有效的定时间隔（毫秒）");
+                ui->checkBox_uarttimesend->setChecked(false);
+                return;
+            }
+            sendTimer->start(interval);   // 启动定时器
+            ui->serial_sendBtn->setEnabled(false); // 禁用手动发送
+            ui->lineEdit_uarttime->setEnabled(false);
+            qDebug() << "定时发送已启用，间隔：" << interval << "ms";
+        } else {
+            sendTimer->stop();
+            ui->lineEdit_uarttime->setEnabled(true);
+            ui->serial_sendBtn->setEnabled(true);  // 恢复手动发送
+            qDebug() << "定时发送已停止";
+        }
+    });
+
+
 
     // 连接扫描信号到 comboBox
     connect(serialMgr, &serialmanager::portListUpdated, this, [this](const QStringList &ports){
@@ -288,4 +406,75 @@ void MainWindow::on_clearSubBtn_clicked()
 void MainWindow::on_clearMsgBtn_clicked()
 {
     ui->textEditMessage->clear();
+}
+
+void MainWindow::on_serial_sendBtn_clicked()
+{
+    if (!serialMgr->isOpen()) {
+        qDebug() << "串口未打开，无法发送数据";
+        return;
+    }
+
+    bool isHex = (ui->comboBox_sendmode->currentText() == "HEX模式");
+    qDebug() << "发送模式:" << (isHex ? "HEX模式" : "文本模式");
+
+    QByteArray data;
+    QString text = ui->textEdit_serialsend->toPlainText();
+    qDebug() << "原始输入:" << text;
+
+    if (isHex) {
+        // 去掉所有空格并转换为大写
+        QString hexStr = text;
+        hexStr.remove(' ');
+        hexStr = hexStr.toUpper();
+
+        // 如果长度是奇数，自动补0在前面
+        if (hexStr.length() % 2 != 0) {
+            hexStr.prepend('0');
+        }
+
+        // 每两个字符解析成一个字节
+        for (int i = 0; i < hexStr.length(); i += 2) {
+            bool ok;
+            char byte = hexStr.mid(i, 2).toUInt(&ok, 16);
+            if (ok) {
+                data.append(byte);
+            } else {
+                qDebug() << "无效的 HEX 字符:" << hexStr.mid(i, 2);
+            }
+        }
+
+        qDebug() << "解析后的 HEX 数据:" << data.toHex(' ').toUpper();
+    } else {
+        data = text.toUtf8();
+        qDebug() << "解析后的文本数据:" << data;
+    }
+
+    serialMgr->sendData(data);
+    qDebug() << "发送完成, 长度:" << data.size();
+}
+
+
+void MainWindow::on_serial_clearrevBtn_clicked()
+{
+    ui->textBrowser_rev->clear();
+}
+
+
+// 接收 serialmanager 发送过来的数据，并根据模式在 TextEdit 显示
+void MainWindow::onSerialDataToSend(const QByteArray &data, bool isHex)
+{
+    if (isHex) {
+        // HEX 模式：把 QByteArray 转成带空格的大写十六进制字符串显示
+        ui->textBrowser_rev->append(data.toHex(' ').toUpper());
+    } else {
+        // 文本模式：直接按 UTF-8 字符串显示
+        ui->textBrowser_rev->append(QString::fromUtf8(data));
+    }
+}
+
+
+void MainWindow::on_serial_clearsendBtn_clicked()
+{
+    ui->textEdit_serialsend->clear();
 }
