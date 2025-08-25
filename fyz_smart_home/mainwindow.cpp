@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     controlModule = new ControlModule(this);
     mqttModule = new MqttModule(this);
     mqttConnected = false;
-
+    serialMgr = new serialmanager(this);
 
     // 左侧边栏相关定义
     ui->left_widget->setObjectName("left_widget");
@@ -45,6 +45,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->label_Sub->setObjectName("LabelSub");
 
     ui->connectMqttButton->setObjectName("connectMqtt");
+    ui->clearPubBtn->setObjectName("clearPubBtn");
+    ui->clearSubBtn->setObjectName("clearSubBtn");
+    ui->clearMsgBtn->setObjectName("clearMsgBtn");
+    ui->connectMqttButton->setObjectName("connectMqtt");
+
     /*mqtt控制界面相关定义*/
     ui->ledBtn->setObjectName("ledBtn");
     ui->fanBtn->setObjectName("fanBtn");
@@ -69,6 +74,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->comboBox_revmode->setObjectName("comboBox_revmode");
     ui->openSerialBtn->setObjectName("openSerialBtn");
 
+    ui->comboBox_baudrate->setCurrentIndex(1);
+    ui->comboBox_stopbit->setCurrentIndex(0);
+    ui->comboBox_checkbit->setCurrentIndex(0);
+    ui->comboBox_databit->setCurrentIndex(0);
+
     /*设置setCheckable是否有效*/
     ui->statusBtn->setCheckable(true);
     ui->mqttBtn->setCheckable(true);
@@ -91,7 +101,6 @@ MainWindow::MainWindow(QWidget *parent)
     // 设置窗口标题
     this->setWindowTitle("MQTT 智能家居控制中心");
     this->setWindowIcon(QIcon(":/src/window.png"));
-
     ui->connectMqttButton->setCheckable(true);  // 设置按钮可切换状态
     ui->connectMqttButton->setText("连接服务器");
 
@@ -123,6 +132,32 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mqttModule, &MqttModule::messageReceived, this, &MainWindow::updateMQTTMessage);
     connect(mqttModule, &MqttModule::stateChanged, this, &MainWindow::updateMQTTState);
     connect(mqttModule, &MqttModule::signal_publishMessage, this, &MainWindow::updateMQTTPubMessage);
+
+
+    // UI 与 uart 信号槽连接
+    connect(serialMgr, &serialmanager::dataReceived, this, [this](const QByteArray &data){
+        ui->textEditMessage->append("收到数据: " + QString(data));
+    });
+
+    connect(serialMgr, &serialmanager::errorOccurred, this, [this](const QString &err){
+        ui->textEditMessage->append("串口错误: " + err);
+    });
+
+    connect(serialMgr, &serialmanager::serialOpened, this, [this](){
+        ui->openSerialBtn->setText("关闭串口");
+    });
+
+    connect(serialMgr, &serialmanager::serialClosed, this, [this](){
+        ui->openSerialBtn->setText("打开串口");
+    });
+
+    // 连接扫描信号到 comboBox
+    connect(serialMgr, &serialmanager::portListUpdated, this, [this](const QStringList &ports){
+//        qDebug() << "Lambda triggered! Ports:" << ports;
+        ui->comboBox_uartnum->clear();
+        ui->comboBox_uartnum->addItems(ports);
+    });
+
 
     // MQTT 连接
     mqttModule->connectToBroker("broker.emqx.io", 1883);
@@ -226,4 +261,31 @@ void MainWindow::on_connectMqttButton_clicked(bool checked)
         mqttConnected = false;
         ui->connectMqttButton->setText("连接服务器");
     }
+}
+
+void MainWindow::on_openSerialBtn_clicked(bool checked)
+{
+    if (checked) {
+        qDebug() << "on_openSerialBtn_clicked:" << endl;
+        serialMgr->openSerial(ui->comboBox_uartnum->currentText(),
+                              ui->comboBox_baudrate->currentText().toInt());
+    } else {
+        qDebug() << "on_openSerialBtn_unpressed:" << endl;
+        serialMgr->closeSerial();
+    }
+}
+
+void MainWindow::on_clearPubBtn_clicked()
+{
+    ui->TextEdit_Pub->clear();
+}
+
+void MainWindow::on_clearSubBtn_clicked()
+{
+    ui->TextEdit_Sub->clear();
+}
+
+void MainWindow::on_clearMsgBtn_clicked()
+{
+    ui->textEditMessage->clear();
 }

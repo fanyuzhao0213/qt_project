@@ -6,6 +6,10 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QTimer>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+
 
 class MqttModule : public QObject
 {

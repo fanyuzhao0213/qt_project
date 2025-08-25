@@ -39,8 +39,7 @@ public:
     QPushButton *mqttBtn;
     QPushButton *uartBtn;
     QWidget *cloudWidget;
-    QHBoxLayout *horizontalLayout_3;
-    QVBoxLayout *verticalLayout_4;
+    QVBoxLayout *verticalLayout_13;
     QWidget *statuswidget;
     QHBoxLayout *horizontalLayout_2;
     QLabel *mqttStatusLabel;
@@ -48,6 +47,8 @@ public:
     QLabel *connectlabel;
     QSpacerItem *horizontalSpacer;
     QPushButton *connectMqttButton;
+    QSpacerItem *horizontalSpacer_15;
+    QPushButton *clearMsgBtn;
     QSpacerItem *horizontalSpacer_3;
     QWidget *messagewidget;
     QHBoxLayout *horizontalLayout;
@@ -65,12 +66,23 @@ public:
     QLineEdit *lineEdit_Client_id_3;
     QTextEdit *textEditMessage;
     QWidget *pubwidget;
+    QVBoxLayout *verticalLayout_4;
     QVBoxLayout *verticalLayout_2;
+    QHBoxLayout *horizontalLayout_3;
+    QSpacerItem *horizontalSpacer_10;
     QLabel *label_Pub;
+    QSpacerItem *horizontalSpacer_9;
+    QPushButton *clearPubBtn;
+    QSpacerItem *horizontalSpacer_11;
     QTextEdit *TextEdit_Pub;
     QWidget *subwidget;
     QVBoxLayout *verticalLayout_3;
+    QHBoxLayout *horizontalLayout_18;
+    QSpacerItem *horizontalSpacer_12;
     QLabel *label_Sub;
+    QSpacerItem *horizontalSpacer_13;
+    QPushButton *clearSubBtn;
+    QSpacerItem *horizontalSpacer_14;
     QTextEdit *TextEdit_Sub;
     QWidget *controlwidget;
     QVBoxLayout *verticalLayout_12;
@@ -113,7 +125,6 @@ public:
     QPushButton *openSerialBtn;
     QGroupBox *groupBox_3;
     QHBoxLayout *horizontalLayout_12;
-    QLabel *label_9;
     QComboBox *comboBox_sendmode;
     QGroupBox *groupBox_2;
     QHBoxLayout *horizontalLayout_11;
@@ -141,6 +152,7 @@ public:
     QSpacerItem *horizontalSpacer_6;
     QPushButton *pushButton_2;
     QSpacerItem *horizontalSpacer_7;
+    QLabel *label_9;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -191,12 +203,8 @@ public:
         sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(cloudWidget->sizePolicy().hasHeightForWidth());
         cloudWidget->setSizePolicy(sizePolicy2);
-        horizontalLayout_3 = new QHBoxLayout(cloudWidget);
-        horizontalLayout_3->setSpacing(1);
-        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
-        horizontalLayout_3->setContentsMargins(5, 1, 1, 1);
-        verticalLayout_4 = new QVBoxLayout();
-        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        verticalLayout_13 = new QVBoxLayout(cloudWidget);
+        verticalLayout_13->setObjectName(QString::fromUtf8("verticalLayout_13"));
         statuswidget = new QWidget(cloudWidget);
         statuswidget->setObjectName(QString::fromUtf8("statuswidget"));
         horizontalLayout_2 = new QHBoxLayout(statuswidget);
@@ -229,12 +237,21 @@ public:
 
         horizontalLayout_2->addWidget(connectMqttButton);
 
+        horizontalSpacer_15 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_15);
+
+        clearMsgBtn = new QPushButton(statuswidget);
+        clearMsgBtn->setObjectName(QString::fromUtf8("clearMsgBtn"));
+
+        horizontalLayout_2->addWidget(clearMsgBtn);
+
         horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_2->addItem(horizontalSpacer_3);
 
 
-        verticalLayout_4->addWidget(statuswidget);
+        verticalLayout_13->addWidget(statuswidget);
 
         messagewidget = new QWidget(cloudWidget);
         messagewidget->setObjectName(QString::fromUtf8("messagewidget"));
@@ -308,17 +325,40 @@ public:
         horizontalLayout->addWidget(textEditMessage);
 
 
-        verticalLayout_4->addWidget(messagewidget);
+        verticalLayout_13->addWidget(messagewidget);
 
         pubwidget = new QWidget(cloudWidget);
         pubwidget->setObjectName(QString::fromUtf8("pubwidget"));
-        verticalLayout_2 = new QVBoxLayout(pubwidget);
+        verticalLayout_4 = new QVBoxLayout(pubwidget);
+        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        verticalLayout_2->setContentsMargins(5, 5, 5, 5);
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
+        horizontalSpacer_10 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_3->addItem(horizontalSpacer_10);
+
         label_Pub = new QLabel(pubwidget);
         label_Pub->setObjectName(QString::fromUtf8("label_Pub"));
 
-        verticalLayout_2->addWidget(label_Pub);
+        horizontalLayout_3->addWidget(label_Pub);
+
+        horizontalSpacer_9 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_3->addItem(horizontalSpacer_9);
+
+        clearPubBtn = new QPushButton(pubwidget);
+        clearPubBtn->setObjectName(QString::fromUtf8("clearPubBtn"));
+
+        horizontalLayout_3->addWidget(clearPubBtn);
+
+        horizontalSpacer_11 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_3->addItem(horizontalSpacer_11);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_3);
 
         TextEdit_Pub = new QTextEdit(pubwidget);
         TextEdit_Pub->setObjectName(QString::fromUtf8("TextEdit_Pub"));
@@ -326,17 +366,41 @@ public:
         verticalLayout_2->addWidget(TextEdit_Pub);
 
 
-        verticalLayout_4->addWidget(pubwidget);
+        verticalLayout_4->addLayout(verticalLayout_2);
+
+
+        verticalLayout_13->addWidget(pubwidget);
 
         subwidget = new QWidget(cloudWidget);
         subwidget->setObjectName(QString::fromUtf8("subwidget"));
         verticalLayout_3 = new QVBoxLayout(subwidget);
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
-        verticalLayout_3->setContentsMargins(5, 5, 5, 5);
+        horizontalLayout_18 = new QHBoxLayout();
+        horizontalLayout_18->setObjectName(QString::fromUtf8("horizontalLayout_18"));
+        horizontalSpacer_12 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_18->addItem(horizontalSpacer_12);
+
         label_Sub = new QLabel(subwidget);
         label_Sub->setObjectName(QString::fromUtf8("label_Sub"));
 
-        verticalLayout_3->addWidget(label_Sub);
+        horizontalLayout_18->addWidget(label_Sub);
+
+        horizontalSpacer_13 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_18->addItem(horizontalSpacer_13);
+
+        clearSubBtn = new QPushButton(subwidget);
+        clearSubBtn->setObjectName(QString::fromUtf8("clearSubBtn"));
+
+        horizontalLayout_18->addWidget(clearSubBtn);
+
+        horizontalSpacer_14 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_18->addItem(horizontalSpacer_14);
+
+
+        verticalLayout_3->addLayout(horizontalLayout_18);
 
         TextEdit_Sub = new QTextEdit(subwidget);
         TextEdit_Sub->setObjectName(QString::fromUtf8("TextEdit_Sub"));
@@ -344,10 +408,7 @@ public:
         verticalLayout_3->addWidget(TextEdit_Sub);
 
 
-        verticalLayout_4->addWidget(subwidget);
-
-
-        horizontalLayout_3->addLayout(verticalLayout_4);
+        verticalLayout_13->addWidget(subwidget);
 
         controlwidget = new QWidget(centralwidget);
         controlwidget->setObjectName(QString::fromUtf8("controlwidget"));
@@ -462,6 +523,10 @@ public:
         horizontalLayout_6->addWidget(label_2);
 
         comboBox_baudrate = new QComboBox(groupBox);
+        comboBox_baudrate->addItem(QString());
+        comboBox_baudrate->addItem(QString());
+        comboBox_baudrate->addItem(QString());
+        comboBox_baudrate->addItem(QString());
         comboBox_baudrate->setObjectName(QString::fromUtf8("comboBox_baudrate"));
 
         horizontalLayout_6->addWidget(comboBox_baudrate);
@@ -478,6 +543,10 @@ public:
         horizontalLayout_7->addWidget(label_3);
 
         comboBox_databit = new QComboBox(groupBox);
+        comboBox_databit->addItem(QString());
+        comboBox_databit->addItem(QString());
+        comboBox_databit->addItem(QString());
+        comboBox_databit->addItem(QString());
         comboBox_databit->setObjectName(QString::fromUtf8("comboBox_databit"));
 
         horizontalLayout_7->addWidget(comboBox_databit);
@@ -495,6 +564,9 @@ public:
         horizontalLayout_8->addWidget(label_4);
 
         comboBox_stopbit = new QComboBox(groupBox);
+        comboBox_stopbit->addItem(QString());
+        comboBox_stopbit->addItem(QString());
+        comboBox_stopbit->addItem(QString());
         comboBox_stopbit->setObjectName(QString::fromUtf8("comboBox_stopbit"));
 
         horizontalLayout_8->addWidget(comboBox_stopbit);
@@ -511,6 +583,9 @@ public:
         horizontalLayout_9->addWidget(label_5);
 
         comboBox_checkbit = new QComboBox(groupBox);
+        comboBox_checkbit->addItem(QString());
+        comboBox_checkbit->addItem(QString());
+        comboBox_checkbit->addItem(QString());
         comboBox_checkbit->setObjectName(QString::fromUtf8("comboBox_checkbit"));
 
         horizontalLayout_9->addWidget(comboBox_checkbit);
@@ -542,12 +617,6 @@ public:
         horizontalLayout_12 = new QHBoxLayout(groupBox_3);
         horizontalLayout_12->setObjectName(QString::fromUtf8("horizontalLayout_12"));
         horizontalLayout_12->setContentsMargins(5, 5, 5, 5);
-        label_9 = new QLabel(groupBox_3);
-        label_9->setObjectName(QString::fromUtf8("label_9"));
-        label_9->setAlignment(Qt::AlignCenter);
-
-        horizontalLayout_12->addWidget(label_9);
-
         comboBox_sendmode = new QComboBox(groupBox_3);
         comboBox_sendmode->addItem(QString());
         comboBox_sendmode->addItem(QString());
@@ -682,6 +751,12 @@ public:
 
         verticalLayout_11->addLayout(verticalLayout_10);
 
+        label_9 = new QLabel(uartwidget);
+        label_9->setObjectName(QString::fromUtf8("label_9"));
+        label_9->setAlignment(Qt::AlignCenter);
+
+        verticalLayout_11->addWidget(label_9);
+
 
         verticalLayout_12->addWidget(uartwidget);
 
@@ -708,13 +783,16 @@ public:
         mqttStatusLabel->setText(QCoreApplication::translate("MainWindow", "\346\234\215\345\212\241\345\231\250\346\234\252\350\277\236\346\216\245", nullptr));
         connectlabel->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
         connectMqttButton->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
+        clearMsgBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\351\231\244\345\216\206\345\217\262log", nullptr));
         label_broker->setText(QCoreApplication::translate("MainWindow", "Broker", nullptr));
         label_port->setText(QCoreApplication::translate("MainWindow", "Port", nullptr));
         label_client_id->setText(QCoreApplication::translate("MainWindow", "ClientID", nullptr));
         label_username->setText(QCoreApplication::translate("MainWindow", "UserName", nullptr));
         label_password->setText(QCoreApplication::translate("MainWindow", "Password", nullptr));
         label_Pub->setText(QCoreApplication::translate("MainWindow", "PublishMessage", nullptr));
+        clearPubBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\351\231\244pub\344\277\241\346\201\257", nullptr));
         label_Sub->setText(QCoreApplication::translate("MainWindow", "SublishMessage", nullptr));
+        clearSubBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\351\231\244sub\344\277\241\346\201\257", nullptr));
         ledBtn->setText(QString());
         led_label->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
         alarmBtn->setText(QString());
@@ -724,13 +802,30 @@ public:
         groupBox->setTitle(QCoreApplication::translate("MainWindow", "\344\270\262\345\217\243\351\205\215\347\275\256", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "\344\270\262\345\217\243\345\217\267", nullptr));
         label_2->setText(QCoreApplication::translate("MainWindow", "\346\263\242\347\211\271\347\216\207", nullptr));
+        comboBox_baudrate->setItemText(0, QCoreApplication::translate("MainWindow", "921600", nullptr));
+        comboBox_baudrate->setItemText(1, QCoreApplication::translate("MainWindow", "115200", nullptr));
+        comboBox_baudrate->setItemText(2, QCoreApplication::translate("MainWindow", "9600", nullptr));
+        comboBox_baudrate->setItemText(3, QCoreApplication::translate("MainWindow", "4800", nullptr));
+
         label_3->setText(QCoreApplication::translate("MainWindow", "\346\225\260\346\215\256\344\275\215", nullptr));
+        comboBox_databit->setItemText(0, QCoreApplication::translate("MainWindow", "8", nullptr));
+        comboBox_databit->setItemText(1, QCoreApplication::translate("MainWindow", "7", nullptr));
+        comboBox_databit->setItemText(2, QCoreApplication::translate("MainWindow", "6", nullptr));
+        comboBox_databit->setItemText(3, QCoreApplication::translate("MainWindow", "5", nullptr));
+
         label_4->setText(QCoreApplication::translate("MainWindow", "\345\201\234\346\255\242\344\275\215", nullptr));
+        comboBox_stopbit->setItemText(0, QCoreApplication::translate("MainWindow", "1", nullptr));
+        comboBox_stopbit->setItemText(1, QCoreApplication::translate("MainWindow", "1.5", nullptr));
+        comboBox_stopbit->setItemText(2, QCoreApplication::translate("MainWindow", "2", nullptr));
+
         label_5->setText(QCoreApplication::translate("MainWindow", "\346\240\241\351\252\214\344\275\215", nullptr));
+        comboBox_checkbit->setItemText(0, QCoreApplication::translate("MainWindow", "NONE", nullptr));
+        comboBox_checkbit->setItemText(1, QCoreApplication::translate("MainWindow", "EVEN", nullptr));
+        comboBox_checkbit->setItemText(2, QCoreApplication::translate("MainWindow", "ODD", nullptr));
+
         label_6->setText(QCoreApplication::translate("MainWindow", "\346\223\215\344\275\234", nullptr));
         openSerialBtn->setText(QCoreApplication::translate("MainWindow", "\346\211\223\345\274\200\344\270\262\345\217\243", nullptr));
         groupBox_3->setTitle(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\345\214\272\351\205\215\347\275\256", nullptr));
-        label_9->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\346\250\241\345\274\217", nullptr));
         comboBox_sendmode->setItemText(0, QCoreApplication::translate("MainWindow", "HEX\346\250\241\345\274\217", nullptr));
         comboBox_sendmode->setItemText(1, QCoreApplication::translate("MainWindow", "\346\226\207\346\234\254\346\250\241\345\274\217", nullptr));
 
@@ -746,6 +841,7 @@ public:
         serial_clearrevBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\347\251\272\346\216\245\346\224\266\345\214\272", nullptr));
         pushButton->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
         pushButton_2->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
+        label_9->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\346\250\241\345\274\217", nullptr));
     } // retranslateUi
 
 };

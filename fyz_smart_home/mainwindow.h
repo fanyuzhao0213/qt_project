@@ -3,8 +3,10 @@
 
 #include <QMainWindow>
 #include <QPaintEvent>  // 必须包含，用于重写 paintEvent
-#include "ControlModule.h"
-#include "MqttModule.h"
+#include "controlmodule.h"
+#include "mqttmodule.h"
+#include "serialmanager.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -35,11 +37,21 @@ protected:
 private slots:
     void on_connectMqttButton_clicked(bool checked);
 
+    void on_openSerialBtn_clicked(bool checked);
+
+    void on_clearPubBtn_clicked();
+
+    void on_clearSubBtn_clicked();
+
+    void on_clearMsgBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     ControlModule *controlModule;
     MqttModule *mqttModule;
     bool mqttConnected;
+    serialmanager *serialMgr;
 };
+
 #endif // MAINWINDOW_H
