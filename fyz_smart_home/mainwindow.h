@@ -68,6 +68,8 @@ private slots:
     void onSerialClosed();                          ///< 串口关闭回调
     void onAutoSendToggled(bool enabled);           ///< 定时发送复选框切换
 
+    void on_subTopicBtn_clicked();
+
 private:
     // ================= 初始化函数 =================
     void initUI();          ///< 初始化窗口布局、图标和标题

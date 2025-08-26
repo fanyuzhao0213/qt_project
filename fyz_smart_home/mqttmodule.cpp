@@ -74,18 +74,6 @@ void MqttModule::connectToBroker(const QString &host, quint16 port,
 }
 
 /**
- * @brief 订阅指定主题
- * @param topic 主题字符串
- */
-void MqttModule::subscribeTopic(const QString &topic)
-{
-    auto sub = m_client->subscribe(topic, 0);
-    if(!sub) {
-        qDebug() << "❌ MQTT subscribe failed!";
-    }
-}
-
-/**
  * @brief 发布消息
  * @param topic 主题
  * @param msg 消息内容
@@ -209,12 +197,23 @@ void MqttModule::sendTestMessage()
     emit signal_publishMessage(topic, jsonString);
 }
 
+// MqttModule.cpp
+void MqttModule::disconnectFromBroker()
+{
+    if (m_client && m_client->state() == QMqttClient::Connected) {
+        m_client->disconnectFromHost();  // 主动断开
+        qDebug() << "MQTT 断开连接中...";
+    } else {
+        qDebug() << "MQTT 已经断开或未初始化";
+    }
+}
+
 /**
  * @brief 连接成功槽函数
  */
 void MqttModule::onConnected()
 {
-    subscribeTopic(SUB_TOPIC);  // 自动订阅默认主题
+    // subscribeTopic(SUB_TOPIC);  // 自动订阅默认主题
     emit connected();
 }
 
@@ -224,4 +223,31 @@ void MqttModule::onConnected()
 void MqttModule::onDisconnected()
 {
     emit disconnected();
+}
+
+
+// MqttModule.cpp
+bool MqttModule::isConnected() const
+{
+    return m_client && m_client->state() == QMqttClient::Connected;
+}
+
+/**
+ * @brief 订阅指定主题
+ * @param topic 主题字符串
+ */
+void MqttModule::subscribeTopic(const QString &topic)
+{
+    if (!m_client) return;
+
+    if (m_client->state() == QMqttClient::Connected) {
+        auto subscription = m_client->subscribe(topic);
+        if (!subscription) {
+            qDebug() << "订阅失败:" << topic;
+        } else {
+            qDebug() << "已订阅:" << topic;
+        }
+    } else {
+        qDebug() << "MQTT 未连接，无法订阅";
+    }
 }

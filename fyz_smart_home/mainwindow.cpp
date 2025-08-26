@@ -311,11 +311,13 @@ void MainWindow::updateMQTTState(QMqttClient::ClientState state)
 {
     if (state == QMqttClient::Connected) {
         ui->textEditMessage->append("服务器已连接!");
+        ui->statusbar->showMessage("服务器已连接!", 2000);
         ui->mqttStatusLabel->setText("服务器已连接!");
         ui->connectlabel->setPixmap(QPixmap(":/src/switch_on.png"));
     } else {
         ui->textEditMessage->append("服务器断开!");
         ui->mqttStatusLabel->setText("服务器未连接!");
+        ui->statusbar->showMessage("服务器未连接!", 2000);
         ui->connectlabel->setPixmap(QPixmap(":/src/switch_off.png"));
     }
 }
@@ -360,13 +362,16 @@ void MainWindow::on_connectMqttButton_clicked(bool checked)
                             .arg(clientId)
                             .arg(username);
         ui->textEditMessage->append(msg);
+        ui->statusbar->showMessage(msg, 2000);
         mqttConnected = true;
         ui->connectMqttButton->setText("断开连接");
     } else {
-        // 断开 MQTT 连接
-        mqttModule->disconnected();
+        // 断开
+        mqttModule->disconnectFromBroker();   // 调用新接口
         mqttConnected = false;
         ui->connectMqttButton->setText("连接服务器");
+        ui->textEditMessage->append("已断开 MQTT 连接");
+        ui->statusbar->showMessage("已断开 MQTT 连接", 2000);
     }
 }
 
@@ -500,6 +505,7 @@ void MainWindow::onSerialOpened()
     ui->lineEdit_uarttime->setEnabled(true);
 
     ui->textBrowser_rev->append("串口已打开");
+    ui->statusbar->showMessage("串口已打开", 3000);
 }
 
 // 串口关闭回调
@@ -513,6 +519,7 @@ void MainWindow::onSerialClosed()
     ui->lineEdit_uarttime->setEnabled(false);
 
     ui->textBrowser_rev->append("串口已关闭");
+    ui->statusbar->showMessage("串口已关闭", 3000);
 }
 
 // 定时发送复选框切换
@@ -548,3 +555,25 @@ void MainWindow::onAutoSendToggled(bool enabled)
 
 
 
+
+void MainWindow::on_subTopicBtn_clicked()
+{
+    // 获取输入的 Topic
+    QString topic = ui->lineEdit_subtopic->text().trimmed(); // 假设你有个 QLineEdit 输入订阅的 Topic
+    if (topic.isEmpty()) {
+        QMessageBox::warning(this, "订阅失败", "订阅主题为空！");
+        return;
+    }
+
+    if (!mqttModule->isConnected()) {
+        QMessageBox::warning(this, "订阅失败", "MQTT 未连接！");
+        return;
+    }
+
+    mqttModule->subscribeTopic(topic);
+    ui->textEditMessage->append(QString("已订阅主题: %1").arg(topic));
+
+    //  提示订阅成功
+    //message：要显示的文本内容。timeout：显示时间（毫秒），表示消息在状态栏中显示多久后自动消失。
+    ui->statusbar->showMessage(QString("已订阅 Topic: %1").arg(topic), 3000);
+}

@@ -28,13 +28,13 @@ public:
      */
     // 只有 host, port, clientId
     void connectToBroker(const QString &host, quint16 port, const QString &clientId);
-
+    void disconnectFromBroker();   // 新增对外接口
     // 所有参数都需要
     void connectToBroker(const QString &host, quint16 port,
                          const QString &clientId,
                          const QString &username,
                          const QString &password);
-
+    bool isConnected() const;      // 判断是否已连接
     /**
      * @brief 订阅主题
      * @param topic 主题名称
