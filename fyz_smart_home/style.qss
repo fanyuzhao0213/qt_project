@@ -171,7 +171,7 @@
 
 
 /* connectMqtt 默认状态：未连接 */
-#connectMqtt, #clearMsgBtn {
+#connectMqttButton, #clearMsgBtn {
     background-color: #f44336; /* 红色 */
     color: #000000;            /* 黑色文字 */
     border-radius: 10px;
@@ -181,17 +181,17 @@
 }
 
 /* connectMqtt 被按下或 checkable 被选中：已连接 */
-#connectMqtt, #clearMsgBtn:checked {
+#connectMqttButton, #clearMsgBtn:checked {
     background-color: #4CAF50; /* 绿色 */
     color: white;
 }
 
 /* 鼠标按下时 */
-#connectMqtt, #clearMsgBtn:pressed {
+#connectMqttButton, #clearMsgBtn:pressed {
     background-color: #da190b; /* 深红色，未连接状态按下 */
 }
 
-#connectMqtt, #clearMsgBtn:checked:pressed {
+#connectMqttButton, #clearMsgBtn:checked:pressed {
     background-color: #45A049; /* 深绿色，已连接状态按下 */
 }
 

@@ -3,104 +3,77 @@
 
 #include <QPainter>
 #include <QtMqtt/qmqttclient.h>
-#include <qdebug.h>
+#include <QDebug>
 #include <QDateTime>
 #include <QTimer>
 #include <QMessageBox>
 
-#define MQTT_AUTO_TOPIC "fyz/123/#"
+#define PROGRAM_DEV_ID          "DEV_2025-01"
+
+#define MQTT_AUTO_TOPIC         "fyz/123/#"
+#define MQTT_BORKER_URL         "aqua.mqtt.istarix.com"
+#define MQTT_PORT               "20018"
+#define MQTT_CLIENT_ID          "washer"
+#define MQTT_USER_NAME          "aqua_mu"
+#define MQTT_PASSWORD           "fyz12345"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , mqttConnected(false)
 {
     ui->setupUi(this);
 
     // 初始化模块
     controlModule = new ControlModule(this);
-    mqttModule = new MqttModule(this);
-    mqttConnected = false;
-    serialMgr = new serialmanager(this);
-    sendTimer = new QTimer(this);
+    mqttModule    = new MqttModule(this);
+    serialMgr     = new serialmanager(this);
+    sendTimer     = new QTimer(this);
 
+    // ====== 封装函数调用，保持主构造简洁 ======
+    initUI();
+    initButtons();
+    initSerialUI();
+    initMqttUI();
 
-    // 左侧边栏相关定义
+    connectControlModule();
+    connectMqttModule();
+    connectSerialModule();
+
+    // 启动 MQTT 测试连接
+    // mqttModule->connectToBroker("broker.emqx.io", 1883, "hhh_123");
+    // ui->textEditMessage->append("服务器开始连接! Broker: broker.emqx.io, Port: 1883");
+    mqttModule->startTestPublish(5000);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+/* ==============================
+ * 初始化 UI 布局和界面元素
+ * ============================== */
+void MainWindow::initUI()
+{
+    // 左侧边栏
     ui->left_widget->setObjectName("left_widget");
     ui->statusBtn->setObjectName("statusBtn");
     ui->mqttBtn->setObjectName("mqttBtn");
     ui->uartBtn->setObjectName("uartBtn");
 
-    /*mqtt连接服务器界面相关定义*/
-    ui->statuswidget->setObjectName("connectWidget");
-    ui->pubwidget->setObjectName("PubWidget");
-    ui->subwidget->setObjectName("SubWidget");
-    ui->loginwidget->setObjectName("loginWidget");
-    ui->messagewidget->setObjectName("messageWidget");
-    ui->controlwidget->setObjectName("controlWidget");
+    // 窗口属性
+    setFixedSize(1280, 800);
+    setWindowTitle("MQTT 智能家居控制中心");
+    setWindowIcon(QIcon(":/src/window.png"));
+}
 
-    ui->mqttStatusLabel->setObjectName("mqttStatusLabel");
-    ui->label_broker->setObjectName("LabelBroker");
-    ui->label_port->setObjectName("LabelPort");
-    ui->label_client_id->setObjectName("LabelClientID");
-    ui->label_username->setObjectName("LabelUserName");
-    ui->label_password->setObjectName("LabelPassword");
-    ui->label_Pub->setObjectName("LabelPub");
-    ui->label_Sub->setObjectName("LabelSub");
-
-    ui->connectMqttButton->setObjectName("connectMqtt");
-    ui->clearPubBtn->setObjectName("clearPubBtn");
-    ui->clearSubBtn->setObjectName("clearSubBtn");
-    ui->clearMsgBtn->setObjectName("clearMsgBtn");
-    ui->connectMqttButton->setObjectName("connectMqtt");
-
-    /*mqtt控制界面相关定义*/
-    ui->ledBtn->setObjectName("ledBtn");
-    ui->fanBtn->setObjectName("fanBtn");
-    ui->alarmBtn->setObjectName("alarmBtn");
-
-    ui->led_label->setObjectName("led_label");
-    ui->alram_label->setObjectName("alram_label");
-    ui->fan_label->setObjectName("fan_label");
-    ui->led_label->setText("LED OFF");
-    ui->alram_label->setText("ALARM OFF");
-    ui->fan_label->setText("ALARM OFF");
-
-
-    /*UART界面相关定义*/
-    ui->uartwidget->setObjectName("UartWidget");
-    ui->comboBox_uartnum->setObjectName("comboBox_uartnum");
-    ui->comboBox_databit->setObjectName("comboBox_databit");
-    ui->comboBox_stopbit->setObjectName("comboBox_stopbit");
-    ui->comboBox_checkbit->setObjectName("comboBox_checkbit");
-    ui->comboBox_baudrate->setObjectName("comboBox_baudrate");
-    ui->comboBox_sendmode->setObjectName("comboBox_sendmode");
-    ui->comboBox_revmode->setObjectName("comboBox_revmode");
-    ui->openSerialBtn->setObjectName("openSerialBtn");
-
-    ui->serial_sendBtn->setObjectName("serial_sendBtn");
-    ui->serial_clearrevBtn->setObjectName("serial_clearrevBtn");
-    ui->serial_clearsendBtn->setObjectName("serial_clearsendBtn");
-    ui->checkBox_uarttimesend->setObjectName("checkBox_uarttimesend");
-    ui->lineEdit_uarttime->setObjectName("lineEdit_uarttime");
-    ui->textBrowser_rev->setObjectName("textBrowser_rev");
-
-    // 设置默认选中项
-    ui->comboBox_uartnum->setCurrentIndex(0);
-    ui->comboBox_baudrate->setCurrentIndex(1);
-    ui->comboBox_databit->setCurrentIndex(3); // 默认8位
-    ui->comboBox_stopbit->setCurrentIndex(0);
-    ui->comboBox_checkbit->setCurrentIndex(0);
-
-    // ================= 初始状态 =================
-    // 串口未打开，ComboBox可修改
-    ui->comboBox_uartnum->setEnabled(true);
-    ui->comboBox_baudrate->setEnabled(true);
-    ui->comboBox_databit->setEnabled(true);
-    ui->comboBox_stopbit->setEnabled(true);
-    ui->comboBox_checkbit->setEnabled(true);
-
-
-    /*设置setCheckable是否有效*/
+/* ==============================
+ * 初始化按钮（Checkable / 状态）
+ * ============================== */
+void MainWindow::initButtons()
+{
+    // 设置 checkable 属性
     ui->statusBtn->setCheckable(true);
     ui->mqttBtn->setCheckable(true);
     ui->uartBtn->setCheckable(true);
@@ -109,12 +82,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->fanBtn->setCheckable(true);
     ui->alarmBtn->setCheckable(true);
     ui->openSerialBtn->setCheckable(true);
-    /*以下3个按钮不需要checked行为*/
-    ui->serial_sendBtn->setCheckable(false);
-    ui->serial_clearrevBtn->setCheckable(false);
-    ui->serial_clearsendBtn->setCheckable(false);
 
-    // 设置statusBtn为默认选中状态
+    // 默认未选中
     ui->statusBtn->setChecked(false);
     ui->mqttBtn->setChecked(false);
     ui->uartBtn->setChecked(false);
@@ -122,183 +91,149 @@ MainWindow::MainWindow(QWidget *parent)
     ui->fanBtn->setChecked(false);
     ui->alarmBtn->setChecked(false);
 
-
-    ui->openSerialBtn->setEnabled(true);       // 打开按钮默认可用
-    ui->serial_sendBtn->setEnabled(false);    // 发送按钮默认禁用
-    ui->serial_clearrevBtn->setEnabled(false);// 清除接收按钮默认禁用
-    ui->serial_clearsendBtn->setEnabled(false);// 清除发送按钮默认禁用
+    // 串口相关按钮默认禁用
+    ui->openSerialBtn->setEnabled(true);
+    ui->serial_sendBtn->setEnabled(false);
+    ui->serial_clearrevBtn->setEnabled(false);
+    ui->serial_clearsendBtn->setEnabled(false);
     ui->checkBox_uarttimesend->setEnabled(false);
     ui->lineEdit_uarttime->setEnabled(false);
 
-    // 设置固定窗口大小
-    this->setFixedSize(1280, 800);
-    // 设置窗口标题
-    this->setWindowTitle("MQTT 智能家居控制中心");
-    this->setWindowIcon(QIcon(":/src/window.png"));
-    ui->connectMqttButton->setCheckable(true);  // 设置按钮可切换状态
+    // MQTT 连接按钮
+    ui->connectMqttButton->setCheckable(true);
     ui->connectMqttButton->setText("连接服务器");
+}
 
-    /*MQTT相关*/
+/* ==============================
+ * 初始化串口相关 UI
+ * ============================== */
+void MainWindow::initSerialUI()
+{
+    ui->uartwidget->setObjectName("UartWidget");
+
+    // 设置默认串口参数
+    ui->comboBox_uartnum->setCurrentIndex(0);
+    ui->comboBox_baudrate->setCurrentIndex(1);
+    ui->comboBox_databit->setCurrentIndex(3); // 默认8位
+    ui->comboBox_stopbit->setCurrentIndex(0);
+    ui->comboBox_checkbit->setCurrentIndex(0);
+}
+
+/* ==============================
+ * 初始化 MQTT 相关 UI
+ * ============================== */
+void MainWindow::initMqttUI()
+{
+    ui->statuswidget->setObjectName("connectWidget");
+    ui->pubwidget->setObjectName("PubWidget");
+    ui->subwidget->setObjectName("SubWidget");
+    ui->loginwidget->setObjectName("loginWidget");
+    ui->messagewidget->setObjectName("messageWidget");
+    ui->controlwidget->setObjectName("controlWidget");
+
+    // 状态提示
     ui->connectlabel->setPixmap(QPixmap(":/src/switch_off.png"));
     ui->mqttStatusLabel->setText("服务器未连接!");
 
-    // UI 与 ControlModule 信号槽连接
+    ui->lineEdit_UsrName->setText(MQTT_USER_NAME);
+    ui->lineEdit_PassWrd->setText(MQTT_PASSWORD);
+    ui->lineEdit_Broker->setText(MQTT_BORKER_URL);
+    ui->lineEdit_Port->setText(MQTT_PORT);
+    QString clientId = QString("%1_%2").arg(MQTT_CLIENT_ID).arg(PROGRAM_DEV_ID);
+    ui->lineEdit_Client_id->setText(clientId);
+
+    // 控制界面默认标签
+    ui->led_label->setText("LED OFF");
+    ui->alram_label->setText("ALARM OFF");
+    ui->fan_label->setText("FAN OFF");
+}
+
+/* ==============================
+ * 信号槽绑定 - 控制模块
+ * ============================== */
+void MainWindow::connectControlModule()
+{
     connect(controlModule, &ControlModule::ledStateChanged, this, [=](bool on){
         ui->led_label->setText(on ? "LED ON" : "LED OFF");
         ui->ledBtn->setChecked(on);
         ui->ledBtn->setIcon(QIcon(on ? ":/src/light_on.png" : ":/src/light_off.png"));
-        /*具体硬件部分待实现*/
     });
     connect(controlModule, &ControlModule::fanStateChanged, this, [=](bool on){
         ui->fan_label->setText(on ? "FAN ON" : "FAN OFF");
         ui->fanBtn->setChecked(on);
         ui->fanBtn->setIcon(QIcon(on ? ":/src/fan_on.png" : ":/src/fan_off.png"));
-        /*具体硬件部分待实现*/
     });
     connect(controlModule, &ControlModule::alarmStateChanged, this, [=](bool on){
         ui->alram_label->setText(on ? "ALARM ON" : "ALARM OFF");
         ui->alarmBtn->setChecked(on);
         ui->alarmBtn->setIcon(QIcon(on ? ":/src/alarm_on.png" : ":/src/alarm_off.png"));
-        /*具体硬件部分待实现*/
     });
+}
 
-    // UI 与 MqttModule 信号槽连接
+/* ==============================
+ * 信号槽绑定 - MQTT 模块
+ * ============================== */
+void MainWindow::connectMqttModule()
+{
     connect(mqttModule, &MqttModule::messageReceived, this, &MainWindow::updateMQTTMessage);
     connect(mqttModule, &MqttModule::stateChanged, this, &MainWindow::updateMQTTState);
     connect(mqttModule, &MqttModule::signal_publishMessage, this, &MainWindow::updateMQTTPubMessage);
+}
 
-
-    // 构造函数中 uart 定时更新串口列表
+/* ==============================
+ * 信号槽绑定 - 串口模块
+ * ============================== */
+void MainWindow::connectSerialModule()
+{
+    // 点击串口下拉框时刷新列表
     connect(ui->comboBox_uartnum, &QComboBox::showPopup, this, [this]() {
-        qDebug() << "ComboBoxUart 被点击，开始扫描串口";
-        serialMgr->scanPorts(); // 调用 serialmanager 扫描
+        serialMgr->scanPorts();
     });
 
-
-    // 将 serialmanager 的 dataReceived 信号连接到 lambda 函数
-    // 当串口接收到数据时，会触发这个槽函数
+    // 接收数据
     connect(serialMgr, &serialmanager::dataReceived, this, [this](const QByteArray &data){
-
-        // 获取 UI 上用于选择接收模式的 ComboBox（文本模式或 HEX 模式）
-        QComboBox *modeCombo = ui->comboBox_revmode;
-
-        // 判断用户是否选择了 HEX 模式，如果选择了就显示十六进制，否则显示文本
-        bool isHex = (modeCombo && modeCombo->currentText() == "HEX模式");
-
-        QString displayStr; // 用于存放最终要显示的字符串
-
-        if (isHex) {
-            // 如果是 HEX 模式，将接收到的 QByteArray 转成 HEX 字符串，每个字节用空格分隔，并转换成大写
-            displayStr = data.toHex(' ').toUpper();
-        } else {
-            // 如果是文本模式，将 QByteArray 按 UTF-8 编码转换为 QString
-            displayStr = QString::fromUtf8(data);
-        }
-
-        // 将显示内容插入到 QTextBrowser 末尾（累积显示，避免覆盖之前内容）
-        ui->textBrowser_rev->moveCursor(QTextCursor::End);      // 将光标移动到文本末尾
-        ui->textBrowser_rev->insertPlainText(displayStr);       // 插入内容，不自动换行
-        ui->textBrowser_rev->moveCursor(QTextCursor::End);      // 插入后再次移动光标到末尾，保证滚动到最新内容
+        bool isHex = (ui->comboBox_revmode->currentText() == "HEX模式");
+        QString displayStr = isHex ? data.toHex(' ').toUpper() : QString::fromUtf8(data);
+        ui->textBrowser_rev->moveCursor(QTextCursor::End);
+        ui->textBrowser_rev->insertPlainText(displayStr);
+        ui->textBrowser_rev->moveCursor(QTextCursor::End);
     });
 
-
+    // 错误提示
     connect(serialMgr, &serialmanager::errorOccurred, this, [this](const QString &err){
         QMessageBox::critical(this, "串口错误", err);
     });
 
-    connect(serialMgr, &serialmanager::serialOpened, this, [this](){
-        ui->serial_sendBtn->setEnabled(true);    // 发送按钮使能
-        ui->serial_clearrevBtn->setEnabled(true);// 清除接收按钮使能
-        ui->serial_clearsendBtn->setEnabled(true);// 清除发送按钮使能
-        ui->checkBox_uarttimesend->setEnabled(true);
-        ui->lineEdit_uarttime->setEnabled(true);
+    // 串口打开/关闭
+    connect(serialMgr, &serialmanager::serialOpened, this, &MainWindow::onSerialOpened);
+    connect(serialMgr, &serialmanager::serialClosed, this, &MainWindow::onSerialClosed);
 
-        // 串口打开后
-        ui->comboBox_uartnum->setEnabled(false);    // 禁用串口选择
-        ui->comboBox_baudrate->setEnabled(false);   // 禁用波特率选择
-        ui->comboBox_databit->setEnabled(false);    // 数据位
-        ui->comboBox_stopbit->setEnabled(false);    // 停止位
-        ui->comboBox_checkbit->setEnabled(false);   // 校验位
-        ui->openSerialBtn->setText("关闭串口");
-    });
-
-    connect(serialMgr, &serialmanager::serialClosed, this, [this](){
-        ui->serial_sendBtn->setEnabled(false);    // 发送按钮默认禁用
-        ui->serial_clearrevBtn->setEnabled(false);// 清除接收按钮默认禁用
-        ui->serial_clearsendBtn->setEnabled(false);// 清除发送按钮默认禁用
-        ui->comboBox_uartnum->setEnabled(true);
-        ui->comboBox_baudrate->setEnabled(true);
-        ui->comboBox_databit->setEnabled(true);
-        ui->comboBox_stopbit->setEnabled(true);
-        ui->comboBox_checkbit->setEnabled(true);
-        ui->checkBox_uarttimesend->setEnabled(false);
-        ui->lineEdit_uarttime->setEnabled(false);
-
-        ui->openSerialBtn->setText("打开串口");
-    });
-
-    /*定时器控制发送，定时器由自动发送checkbox来控制*/
+    // 定时发送
     connect(sendTimer, &QTimer::timeout, this, &MainWindow::on_serial_sendBtn_clicked);
-    // 定时发送复选框控制
-    connect(ui->checkBox_uarttimesend, &QCheckBox::toggled, this, [=](bool checked){
-        if (!serialMgr->isOpen()) {
-            QMessageBox::warning(this, "错误", "串口未打开，无法启动定时发送");
-            ui->checkBox_uarttimesend->setChecked(false);
-            return;
-        }
+    connect(ui->checkBox_uarttimesend, &QCheckBox::toggled, this, &MainWindow::onAutoSendToggled);
 
-        if (checked) {
-            bool ok;
-            int interval = ui->lineEdit_uarttime->text().toInt(&ok); // 获取定时间隔(ms)
-            if (!ok || interval <= 0) {
-                QMessageBox::warning(this, "错误", "请输入有效的定时间隔（毫秒）");
-                ui->checkBox_uarttimesend->setChecked(false);
-                return;
-            }
-            sendTimer->start(interval);   // 启动定时器
-            ui->serial_sendBtn->setEnabled(false); // 禁用手动发送
-            ui->lineEdit_uarttime->setEnabled(false);
-            qDebug() << "定时发送已启用，间隔：" << interval << "ms";
-        } else {
-            sendTimer->stop();
-            ui->lineEdit_uarttime->setEnabled(true);
-            ui->serial_sendBtn->setEnabled(true);  // 恢复手动发送
-            qDebug() << "定时发送已停止";
-        }
-    });
-
-
-
-    // 连接扫描信号到 comboBox
+    // 更新串口下拉框
     connect(serialMgr, &serialmanager::portListUpdated, this, [this](const QStringList &ports){
-//        qDebug() << "Lambda triggered! Ports:" << ports;
         ui->comboBox_uartnum->clear();
         ui->comboBox_uartnum->addItems(ports);
     });
-
-
-    // MQTT 连接
-    mqttModule->connectToBroker("broker.emqx.io", 1883);
-    QString str = QString("服务器开始连接! Broker: %1, Port: %2").arg("broker.emqx.io").arg(1883);
-    ui->textEditMessage->append(str);
-    mqttModule->startTestPublish(5000); // 5 秒测试发送
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 
-// 重写 paintEvent，让背景图片全屏铺满
+
+// ======================== 重绘事件 ========================
+/**
+ * @brief paintEvent
+ * 重写窗口绘制事件：设置背景色 + 背景图全屏铺满
+ */
 void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    // 背景深色
+    // 背景深色填充
     painter.fillRect(this->rect(), QColor("#1e1e2f"));
 
-    // 绘制图片，拉伸到整个窗口
+    // 绘制背景图片（拉伸至窗口大小）
     QPixmap pix(":/src/window_beijing_resized.png");
     if (!pix.isNull()) {
         painter.drawPixmap(this->rect(), pix);
@@ -307,50 +242,74 @@ void MainWindow::paintEvent(QPaintEvent *event)
     QMainWindow::paintEvent(event);
 }
 
+// ======================== 控制模块相关 ========================
+/**
+ * @brief LED 控制按钮点击
+ * @param checked true=开启, false=关闭
+ */
 void MainWindow::on_ledBtn_clicked(bool checked)
 {
     controlModule->setLed(checked);
 }
 
+/**
+ * @brief 风扇控制按钮点击
+ */
 void MainWindow::on_fanBtn_clicked(bool checked)
 {
     controlModule->setFan(checked);
 }
 
+/**
+ * @brief 报警器控制按钮点击
+ */
 void MainWindow::on_alarmBtn_clicked(bool checked)
 {
     controlModule->setAlarm(checked);
 }
 
-
+// ======================== MQTT 模块相关 ========================
+/**
+ * @brief 接收到 MQTT 消息时更新 UI
+ * @param topic 主题
+ * @param msg 消息内容
+ */
 void MainWindow::updateMQTTMessage(const QString &topic, const QByteArray &msg)
 {
     QString content = QString("[%1] Topic: %2 Message: %3")
                         .arg(QDateTime::currentDateTime().toString())
                         .arg(topic)
                         .arg(QString(msg));
+
     ui->textEditMessage->append(content);
     ui->TextEdit_Sub->append(content);
     qDebug() << content;
 }
 
-
+/**
+ * @brief 更新发布消息显示区
+ */
 void MainWindow::updateMQTTPubMessage(QString topic, QString payload)
 {
     ui->TextEdit_Pub->append(topic);
     ui->TextEdit_Pub->append(payload);
 }
 
+/**
+ * @brief 更新订阅消息显示区
+ */
 void MainWindow::updateMQTTSubMessage(QString topic, QString payload)
 {
-    ui->TextEdit_Pub->append(topic);
-    ui->TextEdit_Pub->append(payload);
+    ui->TextEdit_Sub->append(topic);
+    ui->TextEdit_Sub->append(payload);
 }
 
-
+/**
+ * @brief 更新 MQTT 连接状态
+ */
 void MainWindow::updateMQTTState(QMqttClient::ClientState state)
 {
-    if(state == QMqttClient::Connected){
+    if (state == QMqttClient::Connected) {
         ui->textEditMessage->append("服务器已连接!");
         ui->mqttStatusLabel->setText("服务器已连接!");
         ui->connectlabel->setPixmap(QPixmap(":/src/switch_on.png"));
@@ -361,53 +320,102 @@ void MainWindow::updateMQTTState(QMqttClient::ClientState state)
     }
 }
 
-
+/**
+ * @brief 连接/断开 MQTT 按钮点击
+ */
 void MainWindow::on_connectMqttButton_clicked(bool checked)
 {
-    (void)checked;  // 防止 unused parameter 警告
+    Q_UNUSED(checked)  // 防止未使用参数警告
+
     if (!mqttConnected) {
         // 获取界面输入的服务器信息
-        QString host = ui->lineEdit_Broker->text();
-        quint16 port = ui->lineEdit_Port->text().toUShort();
+        QString host     = ui->lineEdit_Broker->text().trimmed();
+        QString portStr  = ui->lineEdit_Port->text().trimmed();
+        QString clientId = ui->lineEdit_Client_id->text().trimmed();
+        QString username = ui->lineEdit_UsrName->text().trimmed();
+        QString password = ui->lineEdit_PassWrd->text(); // 密码允许空格
 
-        mqttModule->connectToBroker(host, port);
-//        mqttModule->connectToBroker(host, port, ui->lineEdit_Broker, ui->lineEdit_Port, ui->textEditMessage);
+        // 检查输入是否为空
+        if (host.isEmpty() || portStr.isEmpty() || clientId.isEmpty() ||
+            username.isEmpty() || password.isEmpty())
+        {
+            QMessageBox::warning(this, "MQTT 连接错误",
+                                 "请确保 Broker、Port、ClientID、Username 和 Password 都已填写！");
+            return;
+        }
+
+        bool ok = false;
+        quint16 port = portStr.toUShort(&ok);
+        if (!ok || port == 0) {
+            QMessageBox::warning(this, "MQTT 连接错误", "Port 必须是有效的数字！");
+            return;
+        }
+
+        // 调用 MQTT 模块连接
+        mqttModule->connectToBroker(host, port, clientId, username, password);
+        // 调用 MQTT 模块连接前，输出连接信息
+        QString msg = QString("服务器开始连接!\nBroker: %1\nPort: %2\nClientID: %3\nUsername: %4")
+                            .arg(host)
+                            .arg(port)
+                            .arg(clientId)
+                            .arg(username);
+        ui->textEditMessage->append(msg);
         mqttConnected = true;
         ui->connectMqttButton->setText("断开连接");
     } else {
+        // 断开 MQTT 连接
         mqttModule->disconnected();
         mqttConnected = false;
         ui->connectMqttButton->setText("连接服务器");
     }
 }
 
+// ======================== 串口模块相关 ========================
+/**
+ * @brief 打开/关闭串口按钮点击
+ */
 void MainWindow::on_openSerialBtn_clicked(bool checked)
 {
     if (checked) {
-        qDebug() << "on_openSerialBtn_clicked:" << endl;
-        serialMgr->openSerial(ui->comboBox_uartnum->currentText(),
-                              ui->comboBox_baudrate->currentText().toInt());
+        qDebug() << "尝试打开串口";
+        serialMgr->openSerial(
+            ui->comboBox_uartnum->currentText(),
+            ui->comboBox_baudrate->currentText().toInt()
+        );
     } else {
-        qDebug() << "on_openSerialBtn_unpressed:" << endl;
+        qDebug() << "关闭串口";
         serialMgr->closeSerial();
     }
 }
 
+/**
+ * @brief 清空发布区
+ */
 void MainWindow::on_clearPubBtn_clicked()
 {
     ui->TextEdit_Pub->clear();
 }
 
+/**
+ * @brief 清空订阅区
+ */
 void MainWindow::on_clearSubBtn_clicked()
 {
     ui->TextEdit_Sub->clear();
 }
 
+/**
+ * @brief 清空消息区
+ */
 void MainWindow::on_clearMsgBtn_clicked()
 {
     ui->textEditMessage->clear();
 }
 
+/**
+ * @brief 串口发送按钮点击
+ * 根据选择的模式（文本 / HEX）解析输入并发送
+ */
 void MainWindow::on_serial_sendBtn_clicked()
 {
     if (!serialMgr->isOpen()) {
@@ -416,19 +424,16 @@ void MainWindow::on_serial_sendBtn_clicked()
     }
 
     bool isHex = (ui->comboBox_sendmode->currentText() == "HEX模式");
-    qDebug() << "发送模式:" << (isHex ? "HEX模式" : "文本模式");
-
     QByteArray data;
     QString text = ui->textEdit_serialsend->toPlainText();
-    qDebug() << "原始输入:" << text;
 
     if (isHex) {
-        // 去掉所有空格并转换为大写
+        // 去掉空格并转换为大写
         QString hexStr = text;
         hexStr.remove(' ');
         hexStr = hexStr.toUpper();
 
-        // 如果长度是奇数，自动补0在前面
+        // 如果长度是奇数，前面补0
         if (hexStr.length() % 2 != 0) {
             hexStr.prepend('0');
         }
@@ -444,37 +449,102 @@ void MainWindow::on_serial_sendBtn_clicked()
             }
         }
 
-        qDebug() << "解析后的 HEX 数据:" << data.toHex(' ').toUpper();
+        qDebug() << "HEX 模式发送:" << data.toHex(' ').toUpper();
     } else {
         data = text.toUtf8();
-        qDebug() << "解析后的文本数据:" << data;
+        qDebug() << "文本模式发送:" << data;
     }
 
     serialMgr->sendData(data);
-    qDebug() << "发送完成, 长度:" << data.size();
+    qDebug() << "发送完成, 数据长度:" << data.size();
 }
 
-
+/**
+ * @brief 清空串口接收区
+ */
 void MainWindow::on_serial_clearrevBtn_clicked()
 {
     ui->textBrowser_rev->clear();
 }
 
-
-// 接收 serialmanager 发送过来的数据，并根据模式在 TextEdit 显示
+/**
+ * @brief 接收 serialmanager 发来的数据并显示
+ * @param data 串口数据
+ * @param isHex 是否使用 HEX 模式
+ */
 void MainWindow::onSerialDataToSend(const QByteArray &data, bool isHex)
 {
     if (isHex) {
-        // HEX 模式：把 QByteArray 转成带空格的大写十六进制字符串显示
         ui->textBrowser_rev->append(data.toHex(' ').toUpper());
     } else {
-        // 文本模式：直接按 UTF-8 字符串显示
         ui->textBrowser_rev->append(QString::fromUtf8(data));
     }
 }
 
-
+/**
+ * @brief 清空串口发送区
+ */
 void MainWindow::on_serial_clearsendBtn_clicked()
 {
     ui->textEdit_serialsend->clear();
 }
+
+// 串口打开成功回调
+void MainWindow::onSerialOpened()
+{
+    // 这里可以更新UI，比如启用串口发送按钮
+    ui->serial_sendBtn->setEnabled(true);
+    ui->serial_clearrevBtn->setEnabled(true);
+    ui->serial_clearsendBtn->setEnabled(true);
+    ui->checkBox_uarttimesend->setEnabled(true);
+    ui->lineEdit_uarttime->setEnabled(true);
+
+    ui->textBrowser_rev->append("串口已打开");
+}
+
+// 串口关闭回调
+void MainWindow::onSerialClosed()
+{
+    // 禁用串口相关按钮
+    ui->serial_sendBtn->setEnabled(false);
+    ui->serial_clearrevBtn->setEnabled(false);
+    ui->serial_clearsendBtn->setEnabled(false);
+    ui->checkBox_uarttimesend->setEnabled(false);
+    ui->lineEdit_uarttime->setEnabled(false);
+
+    ui->textBrowser_rev->append("串口已关闭");
+}
+
+// 定时发送复选框切换
+void MainWindow::onAutoSendToggled(bool enabled)
+{
+    if (!sendTimer) return;
+
+    if (enabled) {
+        QString intervalStr = ui->lineEdit_uarttime->text().trimmed();
+
+        // 判断是否为空
+        if (intervalStr.isEmpty()) {
+            QMessageBox::warning(this, "定时发送错误", "请输入有效的时间间隔（毫秒）！");
+            ui->checkBox_uarttimesend->setChecked(false); // 取消勾选
+            return;
+        }
+
+        bool ok = false;
+        int interval = intervalStr.toInt(&ok);
+        if (!ok || interval <= 0) {
+            QMessageBox::warning(this, "定时发送错误", "请输入正确的正整数时间间隔（毫秒）！");
+            ui->checkBox_uarttimesend->setChecked(false); // 取消勾选
+            return;
+        }
+
+        // 启动定时器
+        sendTimer->start(interval);
+    } else {
+        // 停止定时器
+        sendTimer->stop();
+    }
+}
+
+
+

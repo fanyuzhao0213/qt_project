@@ -241,7 +241,7 @@
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QLineEdit" name="lineEdit_Client_id_2"/>
+            <widget class="QLineEdit" name="lineEdit_UsrName"/>
            </item>
            <item row="4" column="0">
             <widget class="QLabel" name="label_password">
@@ -254,7 +254,7 @@
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QLineEdit" name="lineEdit_Client_id_3"/>
+            <widget class="QLineEdit" name="lineEdit_PassWrd"/>
            </item>
           </layout>
          </widget>

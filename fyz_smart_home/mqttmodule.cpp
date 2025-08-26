@@ -1,232 +1,226 @@
 #include "mqttmodule.h"
 #include <QDateTime>
 #include <QDebug>
-#include <qdatetime.h>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
-#define SUB_TOPIC   "fyz/123/#"
+#define SUB_TOPIC   "fyz/123/#"   // 默认订阅的主题
 
 MqttModule::MqttModule(QObject *parent) : QObject(parent)
 {
     m_client = new QMqttClient(this);
     testCounter = 0;
 
+    // ===== 信号绑定 =====
     connect(m_client, &QMqttClient::stateChanged, this, [=](QMqttClient::ClientState state){
         emit stateChanged(state);
     });
 
-    // 信号绑定
-    connect(m_client, &QMqttClient::connected, this, &MqttModule::onConnected);
+    connect(m_client, &QMqttClient::connected,    this, &MqttModule::onConnected);
     connect(m_client, &QMqttClient::disconnected, this, &MqttModule::onDisconnected);
     connect(m_client, &QMqttClient::messageReceived, this, &MqttModule::handleMessageReceived);
 
+    // 定时器，用于测试定时发布消息
     mqttTestTimer = new QTimer(this);
-    /*模拟发送mqttpub 槽函数*/
-//    connect(mqttTestTimer, &QTimer::timeout, this, &MqttModule::sendTestMessage);
+    // connect(mqttTestTimer, &QTimer::timeout, this, &MqttModule::sendTestMessage);
 }
 
 MqttModule::~MqttModule() {}
 
-void MqttModule::connectToBroker(const QString &host, quint16 port)
+/**
+ * @brief 连接到 MQTT Broker
+ * @param host 服务器地址
+ * @param port 端口
+ * @param clientId 客户端 ID
+ * @param username 用户名（可为空）
+ * @param password 密码（可为空）
+ */
+// 重载函数 1：只传 host, port, clientId
+void MqttModule::connectToBroker(const QString &host, quint16 port, const QString &clientId)
 {
-    // 设置 MQTT 客户端的服务器地址和端口
-     m_client->setHostname(host);
-     m_client->setPort(port);
+    m_client->setHostname(host);
+    m_client->setPort(port);
 
-     // 触发连接
-     m_client->connectToHost();
+    if (!clientId.isEmpty()) {
+        m_client->setClientId(clientId);
+    }
 
-//     // 如果传入了对应的 UI 控件，则更新 UI 显示
-//     if(lineEditBroker) lineEditBroker->setText(host);
-//     if(lineEditPort) lineEditPort->setText(QString::number(port));
-
-//     // 生成日志字符串
-//     if(textEditLog){
-//         QString log = QString("服务器地址: %1").arg(host);
-//         textEditLog->append(log);
-
-//         log = QString("服务器端口: %1").arg(port);
-//         textEditLog->append(log);
-//     }
+    // 触发连接
+    m_client->connectToHost();
 }
 
+// 重载函数 2：host, port, clientId, username, password
+void MqttModule::connectToBroker(const QString &host, quint16 port,
+                                 const QString &clientId,
+                                 const QString &username,
+                                 const QString &password)
+{
+    m_client->setHostname(host);
+    m_client->setPort(port);
+
+    if (!clientId.isEmpty()) {
+        m_client->setClientId(clientId);
+    }
+    if (!username.isEmpty()) {
+        m_client->setUsername(username);
+    }
+    if (!password.isEmpty()) {
+        m_client->setPassword(password);
+    }
+
+    // 触发连接
+    m_client->connectToHost();
+}
+
+/**
+ * @brief 订阅指定主题
+ * @param topic 主题字符串
+ */
 void MqttModule::subscribeTopic(const QString &topic)
 {
     auto sub = m_client->subscribe(topic, 0);
     if(!sub) {
-        qDebug() << "MQTT subscribe failed!";
+        qDebug() << "❌ MQTT subscribe failed!";
     }
 }
 
+/**
+ * @brief 发布消息
+ * @param topic 主题
+ * @param msg 消息内容
+ */
 void MqttModule::publishMessage(const QString &topic, const QString &msg)
 {
     if(m_client->publish(topic, msg.toUtf8()) == -1){
-        qDebug() << "MQTT publish failed!";
+        qDebug() << "❌ MQTT publish failed!";
     }
 }
 
+/**
+ * @brief 启动定时测试发布
+ * @param intervalMs 时间间隔 (毫秒)
+ */
 void MqttModule::startTestPublish(int intervalMs)
 {
     mqttTestTimer->start(intervalMs);
 }
 
+/**
+ * @brief 处理接收到的 MQTT 消息
+ * @param message 收到的消息数据
+ * @param topic 消息对应的主题
+ */
 void MqttModule::handleMessageReceived(const QByteArray &message, const QMqttTopicName &topic)
 {
-    /*解析json数据*/
-    qDebug() << "收到MQTT消息, Topic:" << topic.name();
+    qDebug() << "📩 收到MQTT消息, Topic:" << topic.name();
     qDebug() << "原始消息:" << message;
 
-    // 1. 将 QByteArray 转成 QJsonDocument
+    // JSON 解析
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(message, &parseError);
 
     if (doc.isNull() || parseError.error != QJsonParseError::NoError) {
-        qDebug() << "JSON 解析失败:" << parseError.errorString();
-        return; // ❌ 不要 return -1，因为这是 void 函数
+        qDebug() << "❌ JSON 解析失败:" << parseError.errorString();
+        return;
     }
 
-    // 2. 确认是对象
     if (!doc.isObject()) {
-        qDebug() << "JSON 格式不是对象";
+        qDebug() << "❌ JSON 格式不是对象";
         return;
     }
 
     QJsonObject root = doc.object();
-    /*
-    {
-      "header": {
-        "device_id": "dev-001",
-        "msg_id": 1002
-      },
-      "payload": {
-        "user": {
-          "name": "Alice",
-          "age": 25
-        }
-      }
-    }
-    */
-    // ===== 示例：解析 header 里的内容 =====
+
+    // ===== 解析 header =====
     if (root.contains("header") && root["header"].isObject()) {
-        // 取出 header 对象
         QJsonObject header = root["header"].toObject();
-
-        // 从 header 中读取字符串类型的 "device_id"
         QString deviceId = header["device_id"].toString();
-
-        // 从 header 中读取整型的 "msg_id"
         int msgId = header["msg_id"].toInt();
 
-        // 打印出来，方便调试
         qDebug() << "设备ID:" << deviceId;
         qDebug() << "消息ID:" << msgId;
     }
 
-
-    // ===== 示例：解析 payload 里的 user 对象 =====
+    // ===== 解析 payload =====
     if (root.contains("payload") && root["payload"].isObject()) {
-        // 取出 payload 对象
         QJsonObject payload = root["payload"].toObject();
 
-        // 检查 payload 里是否包含 "user" 且是对象
         if (payload.contains("user") && payload["user"].isObject()) {
-            // 取出 user 对象
             QJsonObject user = payload["user"].toObject();
-
-            // 从 user 中读取字符串字段 "name"
             QString name = user["name"].toString();
-
-            // 从 user 中读取整型字段 "age"
             int age = user["age"].toInt();
 
-            // 打印出来，方便调试
             qDebug() << "用户名:" << name;
             qDebug() << "年龄:" << age;
         }
     }
 
+    // 发出信号供 UI 层使用
     emit messageReceived(topic.name(), message);
 }
 
-/*
-{
-  "header": {
-    "device_id": "dev-001",
-    "timestamp": "2025-08-25T12:00:00Z",
-    "msg_id": 1001
-  },
-  "payload": {
-    "sensor_data": [
-      {
-        "type": "temperature",
-        "value": 26.4,
-        "unit": "C"
-      },
-      {
-        "type": "humidity",
-        "value": 55.2,
-        "unit": "%"
-      }
-    ]
-  }
-}
-*/
-/*调用发送mqtt函数*/
+/**
+ * @brief 发送测试 JSON 消息 (模拟传感器数据)
+ */
 void MqttModule::sendTestMessage()
 {
     static int msg_id  = 1;
     if(!m_client || m_client->state() != QMqttClient::Connected) return;
-    /*string 数据*/
-//    QString topic = "fyz/123/test/112233";
-//    QString msg = QString("Test message #%1").arg(testCounter++);
-//    publishMessage(topic, msg);
 
-    /*json数据*/
     QString topic = "fyz/123/test/112233";
 
-    // 1. header 对象
+    // ===== 构建 header =====
     QJsonObject header;
-    header.insert("device_id","V_hw_01.01.00_sw_2.2.88");
-    header.insert("timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)); // UTC时间
-    header["msg_id"] = msg_id++;  // 可变参数，每次发送时可以 ++
+    header.insert("device_id", "V_hw_01.01.00_sw_2.2.88");
+    header.insert("timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    header["msg_id"] = msg_id++;
 
-    // 2. payload 对象里的 sensor_data 数组
+    // ===== 构建 payload (模拟温湿度数据) =====
     QJsonArray sensorArray;
+
     QJsonObject temp;
-    temp.insert("type","temperature");
-    temp.insert("value",26.4);
-    temp.insert("unit","C");
+    temp.insert("type", "temperature");
+    temp.insert("value", 26.4);
+    temp.insert("unit", "C");
     sensorArray.append(temp);
+
     QJsonObject hum;
-    hum.insert("type","humidity");
-    hum.insert("value",55.2);
-    hum.insert("unit","%");
+    hum.insert("type", "humidity");
+    hum.insert("value", 55.2);
+    hum.insert("unit", "%");
     sensorArray.append(hum);
 
-    // 3. payload 对象
     QJsonObject payload;
     payload.insert("sensor_data", sensorArray);
 
-    // 4. 根对象
+    // ===== 根对象 =====
     QJsonObject root;
     root.insert("header", header);
     root.insert("payload", payload);
 
-    // 5. 转成 JSON 字符串
+    // 转成 JSON 字符串
     QJsonDocument doc(root);
     QString jsonString = doc.toJson(QJsonDocument::Compact);
-    qDebug() << jsonString;
-    publishMessage(topic, jsonString);
+    qDebug() << "📤 发布测试消息:" << jsonString;
 
+    // 发布
+    publishMessage(topic, jsonString);
     emit signal_publishMessage(topic, jsonString);
 }
 
-// 槽函数
+/**
+ * @brief 连接成功槽函数
+ */
 void MqttModule::onConnected()
 {
-    subscribeTopic(SUB_TOPIC);
+    subscribeTopic(SUB_TOPIC);  // 自动订阅默认主题
     emit connected();
 }
 
+/**
+ * @brief 断开连接槽函数
+ */
 void MqttModule::onDisconnected()
 {
     emit disconnected();
