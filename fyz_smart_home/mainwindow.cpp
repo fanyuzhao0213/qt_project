@@ -56,12 +56,6 @@ MainWindow::~MainWindow()
  * ============================== */
 void MainWindow::initUI()
 {
-    // 左侧边栏
-    ui->left_widget->setObjectName("left_widget");
-    ui->statusBtn->setObjectName("statusBtn");
-    ui->mqttBtn->setObjectName("mqttBtn");
-    ui->uartBtn->setObjectName("uartBtn");
-
     // 窗口属性
     setFixedSize(1280, 800);
     setWindowTitle("MQTT 智能家居控制中心");
@@ -109,8 +103,6 @@ void MainWindow::initButtons()
  * ============================== */
 void MainWindow::initSerialUI()
 {
-    ui->uartwidget->setObjectName("UartWidget");
-
     // 设置默认串口参数
     ui->comboBox_uartnum->setCurrentIndex(0);
     ui->comboBox_baudrate->setCurrentIndex(1);
@@ -124,13 +116,6 @@ void MainWindow::initSerialUI()
  * ============================== */
 void MainWindow::initMqttUI()
 {
-    ui->statuswidget->setObjectName("connectWidget");
-    ui->pubwidget->setObjectName("PubWidget");
-    ui->subwidget->setObjectName("SubWidget");
-    ui->loginwidget->setObjectName("loginWidget");
-    ui->messagewidget->setObjectName("messageWidget");
-    ui->controlwidget->setObjectName("controlWidget");
-
     // 状态提示
     ui->connectlabel->setPixmap(QPixmap(":/src/switch_off.png"));
     ui->mqttStatusLabel->setText("服务器未连接!");
@@ -153,6 +138,7 @@ void MainWindow::initMqttUI()
  * ============================== */
 void MainWindow::connectControlModule()
 {
+
     connect(controlModule, &ControlModule::ledStateChanged, this, [=](bool on){
         ui->led_label->setText(on ? "LED ON" : "LED OFF");
         ui->ledBtn->setChecked(on);

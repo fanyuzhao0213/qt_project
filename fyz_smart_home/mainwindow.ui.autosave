@@ -1212,6 +1212,16 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>50</y>
+        <width>120</width>
+        <height>80</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

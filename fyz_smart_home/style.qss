@@ -1,35 +1,26 @@
 /* ===========================
- * 左侧面板样式
+ * StackedWidget 容器样式
  * =========================== */
- #left_widget {
-    background: qlineargradient(
-        x1: 0, y1: 0, x2: 0, y2: 1, /* 从上到下渐变 */
-        stop: 0 #2c3e50,             /* 上方深蓝灰 */
-        stop: 1 #34495e              /* 下方更深蓝灰 */
-    );
-    border-top-left-radius: 15px;    /* 左上圆角 */
-    border-bottom-left-radius: 15px; /* 左下圆角 */
-    border: none;                    /* 无边框 */
+ QStackedWidget {
+    background: transparent; /* 透明背景，显示底层渐变 */
+    border: none;
 }
 
 /* ===========================
- * 云处理界面样式 - 半透明
+ * StackedWidget中的左侧面板样式
  * =========================== */
-#cloud_widget {
-    /* 可选背景图 */
-    /* background-image: url(:/src/mqtt_beijing.png); */
-    background-repeat: no-repeat;          /* 背景不重复 */
-    background-position: center;           /* 背景居中 */
-
-    /* 半透明背景色 */
-    background-color: rgba(80, 200, 120, 140);  /* A=140表示半透明 */
-
-    /* 边框样式 */
-    border: 2px solid rgba(60, 42, 48, 180);    /* 半透明边框 */
-    border-radius: 20px;                         /* 圆角 */
-
-    /* 内边距 */
-    padding: 10px;
+ #stackedWidget #left_widget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1, /* 从上到下渐变 */
+        stop: 0 #3498db,             /* 上方亮蓝色 - 更醒目的操作色 */
+        stop: 1 #2980b9              /* 下方深蓝色 - 专业感 */
+    );
+    border-top-left-radius: 15px;    /* 左上圆角 */
+    border-bottom-left-radius: 15px; /* 左下圆角 */
+    border-top-right-radius: 15px;   /* 右上圆角 */
+    border-bottom-right-radius: 15px; /* 右下圆角 */
+    border: 2px solid #1f618d;       /* 添加边框增强层次感 */
+    padding: 10px;                   /* 增加内边距 */
 }
 
 /* ===========================
@@ -40,7 +31,7 @@
     border-radius: 12px;       /* 圆角 */
     min-width: 95px; max-width: 95px;
     min-height: 50px; max-height: 50px;
-    background-color: #2c3e50; /* 背景色与面板一致 */
+    background-color: rgb(22, 140, 53); /* 背景色与面板一致 */
     color: white;               /* 文字颜色 */
     font-size: 16px;            /* 字号 */
     font-weight: 600;           /* 加粗 */
@@ -64,7 +55,7 @@
     border-radius: 12px;
     min-width: 95px; max-width: 95px;
     min-height: 50px; max-height: 50px;
-    background-color: #2c3e50;
+    background-color: rgb(22, 140, 53);
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -88,7 +79,7 @@
     border-radius: 12px;
     min-width: 95px; max-width: 95px;
     min-height: 50px; max-height: 50px;
-    background-color: #2c3e50;
+    background-color: rgb(22, 140, 53);
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -105,9 +96,25 @@
 }
 
 /* ===========================
+ * 云处理界面样式 - 半透明
+ * =========================== */
+#cloudWidget {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1, /* 从上到下渐变 */
+        stop: 0 rgb(126, 154, 215),             /* 上方亮蓝色 - 更醒目的操作色 */
+        stop: 1 rgb(52, 19, 215)              /* 下方深蓝色 - 专业感 */
+    );
+    border-top-left-radius: 15px;    /* 左上圆角 */
+    border-bottom-left-radius: 15px; /* 左下圆角 */
+    border-top-right-radius: 15px;   /* 右上圆角 */
+    border-bottom-right-radius: 15px; /* 右下圆角 */
+    border: 2px solid #1f618d;       /* 添加边框增强层次感 */
+    padding: 10px;                   /* 增加内边距 */
+}
+/* ===========================
  * 连接 Widget 样式
  * =========================== */
-#connectWidget {
+#statuswidget {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 0, y2: 1, /* 从上到下渐变 */
         stop: 0 #C8E6C9,             /* 上亮绿色 */
@@ -120,7 +127,7 @@
 /* ===========================
  * 登录 Widget 样式
  * =========================== */
-#loginWidget {
+#loginwidget {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 0, y2: 1,
         stop: 0 #3498db, /* 上亮蓝色 */
@@ -133,7 +140,7 @@
 /* ===========================
  * 消息 Widget 样式
  * =========================== */
-#messageWidget {
+#messagewidget {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 0, y2: 1,
         stop: 0 #f39c12, /* 上橙色 */
@@ -146,7 +153,7 @@
 /* ===========================
  * 订阅 Widget 样式
  * =========================== */
-#SubWidget {
+#subwidget {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 0, y2: 1,
         stop: 0 #9b59b6, /* 上紫色 */
@@ -159,7 +166,7 @@
 /* ===========================
  * 发布 Widget 样式
  * =========================== */
-#PubWidget {
+#pubwidget {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 0, y2: 1,
         stop: 0 #e74c3c, /* 上亮红 */
@@ -172,7 +179,7 @@
 /* ===========================
  * 标签字体统一样式
  * =========================== */
-#LabelBroker, #LabelPort, #LabelClientID, #LabelUserName, #LabelPassword, #LabelPub, #LabelSub  {
+#label_broker, #label_port, #LabelClientID, #label_username, #label_password, #label_Pub, #label_Sub, #connectlabel {
     color: #ffffff;                   /* 白色字体 */
     font-family: "Segoe UI", "Microsoft YaHei", "Arial", sans-serif; /* 清晰字体 */
     font-size: 18px;                  /* 字号 */
@@ -192,7 +199,16 @@
  * 连接 MQTT 按钮默认/按下/选中样式
  * =========================== */
 #connectMqttButton, #clearMsgBtn {
-    background-color: #f44336; /* 默认红色 - 未连接 */
+    background-color: #e56767; /* 默认红色 - 未连接 */
+    color: #000000;            /* 黑色文字 */
+    border-radius: 10px;
+    font-size: 16px;
+    min-width: 100px; max-width: 100px;
+    min-height: 40px; max-height: 40px;
+}
+
+#clearMsgBtn {
+    background-color: #23a97a; /* 默认红色 - 未连接 */
     color: #000000;            /* 黑色文字 */
     border-radius: 10px;
     font-size: 16px;
@@ -202,7 +218,7 @@
 
 /* 订阅按钮 */
 #subTopicBtn {
-    background-color: #f44336;
+    background-color: #e56767;
     color: #000000;
     border-radius: 10px;
     font-size: 16px;
@@ -211,32 +227,34 @@
 }
 
 /* 选中 - 已连接状态 */
-#connectMqttButton, #clearMsgBtn:checked {
+#connectMqttButton:checked, #clearMsgBtn:checked {
     background-color: #4CAF50; /* 绿色 */
     color: white;
 }
 
 /* 按下效果 */
-#connectMqttButton, #clearMsgBtn:pressed {
+#connectMqttButton:pressed, #clearMsgBtn:pressed {
     background-color: #da190b; /* 深红色 - 未连接状态按下 */
 }
 
-#connectMqttButton, #clearMsgBtn:checked:pressed {
+#connectMqttButton:checked:pressed, #clearMsgBtn:checked:pressed {
     background-color: #45A049; /* 深绿色 - 已连接状态按下 */
 }
 
 /* ===========================
  * 清除按钮样式
  * =========================== */
-#clearPubBtn, #clearSubBtn{
-    background-color: #f44336;   /* 红色背景 */
-    color: #000000;              /* 黑色文字 */
+ #clearPubBtn, #clearSubBtn {
+    background-color: #23a97a;
+    color: #000000;
     border: none;
     border-radius: 8px;
     padding: 6px 12px;
     font-size: 14px;
     font-weight: bold;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.3); /* 投影制造边界感 */
 }
+
 
 /* 悬停效果 */
 #clearPubBtn:hover, #clearSubBtn:hover{
@@ -248,10 +266,21 @@
     background-color: #c62828;   /* 按下更深 */
 }
 
+
+/*subtopic lineedit 字体*/
+#lineEdit_subtopic {
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    padding: 2px 4px;
+    background-color: #F0F0F0;
+    font-size: 20px; /* 固定大小 */
+}
+
+
 /* ===========================
  * 控制面板底色 - 半透明渐变
  * =========================== */
-#controlWidget {
+#controlwidget {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 0, y2: 1,
         stop: 0 rgba(52, 73, 94, 180),   /* 上半透明 */
@@ -273,14 +302,18 @@
     qproperty-alignment: AlignCenter;
 }
 
-/*subtopic lineedit 字体*/
-#lineEdit_subtopic {
-    border: 1px solid #CCCCCC;
-    border-radius: 4px;
-    padding: 2px 4px;
-    background-color: #F0F0F0;
-    font-size: 20px; /* 固定大小 */
+#smartwidget {
+    background-color: #0d1117;  /* 深色背景，衬托科技感 */
+    border: 3px solid;
+    border-radius: 12px;
+    border-image: qlineargradient(
+        x1: 0, y1: 0, x2: 1, y2: 1, /* 对角渐变 */
+        stop: 0 #00e5ff,
+        stop: 0.5 #7c4dff,
+        stop: 1 #ff4081
+    ) 1;   /* 渐变色做边框 */
 }
+
 
 /* ===========================
  * LED / FAN / ALARM 按钮
@@ -333,7 +366,7 @@
 /* ===========================
  * UART Widget 背景
  * =========================== */
-#UartWidget {
+#uartwidget {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 1, y2: 1,
         stop: 0 #c8c6f0, /* 柔和淡紫灰 */
@@ -403,10 +436,6 @@ QComboBox QAbstractItemView {
 
 /* 已打开状态 - 红色 */
 #openSerialBtn:checked { background-color: #F44336; }
-
-/* ===========================
- * 通用 QPushButton 样式
- * =========================== */
 .serial-action-btn {
     color: #ffffff;
     border-radius: 10px;
@@ -435,13 +464,13 @@ QComboBox QAbstractItemView {
 /* ===========================
  * QCheckBox 样式
  * =========================== */
-checkBox_uarttimesend {
+#checkBox_uarttimesend {
     spacing: 5px;
     font-weight: bold;
 }
 
 /* 禁用状态 */
-checkBox_uarttimesend::indicator:disabled {
+#checkBox_uarttimesend::indicator:disabled {
     background-color: #CCCCCC;
 }
 
@@ -463,4 +492,33 @@ checkBox_uarttimesend::indicator:disabled {
     color: #00FF00;
     font-family: Consolas;
     font-size: 14px;
+}
+
+/* ===========================
+ * StackedWidget 页面通用样式
+ * =========================== */
+QWidget#page_mqtt, QWidget#page_uart {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 rgba(255, 255, 255, 30),   /* 上半透明白 */
+        stop: 1 rgba(240, 240, 240, 40)    /* 下半透明浅灰 */
+    );
+    border-top-right-radius: 15px;     /* 右上圆角 */
+    border-bottom-right-radius: 15px;  /* 右下圆角 */
+    border: none;
+}
+
+/* ===========================
+ * 页面标题样式
+ * =========================== */
+.page-title {
+    color: #2c3e50;
+    font-family: "Segoe UI", "Microsoft YaHei", "Arial", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    qproperty-alignment: AlignCenter;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    margin: 10px;
 }
