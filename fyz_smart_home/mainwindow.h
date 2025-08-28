@@ -15,7 +15,9 @@
 #include "controlmodule.h"   // 控制模块（LED/Fan/Alarm）
 #include "mqttmodule.h"      // MQTT 模块
 #include "serialmanager.h"   // 串口管理模块
-
+#include "musicmodule.h"
+#include <QEvent>
+#include <QMouseEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -41,6 +43,7 @@ protected:
      * 重写窗口绘制事件，用于绘制全屏背景图片和背景色
      */
     void paintEvent(QPaintEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private slots:
     // ================= UI 控件槽函数 =================
@@ -62,13 +65,40 @@ private slots:
     void updateMQTTSubMessage(QString topic, QString payload);           ///< 更新订阅消息显示
     void updateMQTTState(QMqttClient::ClientState state);                ///< 更新 MQTT 连接状态
     void onSerialDataToSend(const QByteArray &data, bool isHex);        ///< 串口接收数据显示
+    void on_subTopicBtn_clicked();
 
     // ================= 串口辅助槽 =================
     void onSerialOpened();                          ///< 串口打开成功回调
     void onSerialClosed();                          ///< 串口关闭回调
     void onAutoSendToggled(bool enabled);           ///< 定时发送复选框切换
 
-    void on_subTopicBtn_clicked();
+    //================= MUSIC辅助槽 =================
+    // 播放/暂停按钮点击槽 - 控制音乐的播放和暂停状态切换
+    void on_toolButton_bofangzanting_clicked();
+    // 打开文件按钮点击槽 - 打开文件对话框选择音乐文件
+    void on_openMusicBtn_clicked();
+    // 音乐音量滑块值变化槽 - 实时响应音量滑块的数值变化
+    void on_verticalSlider_musci_valueChanged(int value);
+    // 声音按钮点击槽 - 控制静音/取消静音功能
+    void on_toolButton_sound_clicked();
+    // 检查鼠标位置槽 - 延迟检查鼠标是否离开声音控制区域
+    void checkMousePosition();
+    // 显示音量滑块槽 - 当鼠标悬停在声音按钮时显示音量控制滑块
+    void showVolumeSlider();
+    // 隐藏音量滑块槽 - 当鼠标离开声音控制区域时隐藏音量滑块
+    void hideVolumeSlider();
+    // 处理静音切换槽 - 执行静音和取消静音的具体逻辑
+    void handleMuteToggle();
+    // 显示音乐滑块槽 - 显示音乐相关的控制滑块（如果有多个滑块）
+    void showMusicSlider();
+    // 隐藏音乐滑块槽 - 隐藏音乐相关的控制滑块
+    void hideMusicSlider();
+    // 音乐滑块值变化槽 - 专门处理音乐音量滑块的值变化事件
+    void onMusicSliderValueChanged(int value);
+    // 音乐滑块释放槽 - 当用户释放音乐滑块时触发的操作
+    void onMusicSliderReleased();
+    // 声音控制初始化函数 - 初始化声音相关的控件状态和信号连接
+    void setupSoundControl();
 
 private:
     // ================= 初始化函数 =================
@@ -91,6 +121,13 @@ private:
 
     QTimer *sendTimer;            ///< 串口定时发送定时器
     bool mqttConnected;           ///< MQTT 连接状态标志
+
+    musicmodule *music;         // 播放模块
+    int previousVolume = 50;
+    bool isMuted = false;
+    void setupVolumeControl();
+    QTimer *hideTimer;            ///隐藏定时器
+
 };
 
 #endif // MAINWINDOW_H

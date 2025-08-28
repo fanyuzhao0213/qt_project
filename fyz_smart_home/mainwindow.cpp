@@ -7,6 +7,7 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QMessageBox>
+#include <QFileDialog>
 
 #define PROGRAM_DEV_ID          "DEV_2025-01"
 
@@ -24,11 +25,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    //强制 music_page 使用样式背景
+    ui->music_page->setAttribute(Qt::WA_StyledBackground, true);
+    ui->stackedWidget->setCurrentWidget(ui->music_page);
+
     // 初始化模块
     controlModule = new ControlModule(this);
     mqttModule    = new MqttModule(this);
     serialMgr     = new serialmanager(this);
     sendTimer     = new QTimer(this);
+    music         = new musicmodule(this);
 
     // ====== 封装函数调用，保持主构造简洁 ======
     initUI();
@@ -39,6 +45,107 @@ MainWindow::MainWindow(QWidget *parent)
     connectControlModule();
     connectMqttModule();
     connectSerialModule();
+
+    ui->toolButton_xiazai->setIcon(QIcon(":/src/music/xiazai.png"));
+    ui->toolButton_xihuan->setIcon(QIcon(":/src/music/xihuan.png"));
+    ui->toolButton_zuijinbofang->setIcon(QIcon(":/src/music/lishibofang.png"));
+    ui->toolButton_yinyueguan->setIcon(QIcon(":/src/music/yinyue.png"));
+    ui->toolButton_diantai->setIcon(QIcon(":/src/music/diantai.png"));
+    ui->toolButton_tuijian->setIcon(QIcon(":/src/music/tuijian.png"));
+    ui->toolButton_biaoti->setIcon(QIcon(":/src/music/tubiao.png"));
+    ui->toolButton_zuidahua->setIcon(QIcon(":/src/music/zuidahua.png"));
+    ui->toolButton_zuixiaohua->setIcon(QIcon(":/src/music/zuixiaohua.png"));
+    ui->toolButton_zhuangban->setIcon(QIcon(":/src/music/zhuangban.png"));
+    ui->toolButton_tuichu->setIcon(QIcon(":/src/music/guanbi.png"));
+    ui->toolButton_shangyiqu->setIcon(QIcon(":/src/music/shangyiqu.png"));
+    ui->toolButton_bofangzanting->setIcon(QIcon(":/src/music/bofang.png"));
+    ui->toolButton_xiayiqu->setIcon(QIcon(":/src/music/xiayiqu.png"));
+    ui->toolButton_sound->setIcon(QIcon(":/src/music/yinliang.png"));
+    ui->toolButton_mode->setIcon(QIcon(":/src/music/shunxu.png"));
+    ui->toolButton_geci->setIcon(QIcon(":/src/music/geci.png"));
+    ui->toolButton_add->setIcon(QIcon(":/src/music/tianjia.png"));
+
+    ui->toolButton_xiazai->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->toolButton_xihuan->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->toolButton_zuijinbofang->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->toolButton_yinyueguan->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->toolButton_diantai->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->toolButton_tuijian->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->toolButton_biaoti->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    // 如果需要进一步美化，可以用 setStyleSheet
+    ui->groupBox_wodeyinyue->setStyleSheet(
+        "QGroupBox::title { "
+        "   subcontrol-origin: margin;"
+        "   subcontrol-position: top left;"
+        "   left: 0px;"
+        "   top: -5px;"
+        "   color: rgb(31, 24, 24);"
+        "   background-color: rgb(255,255,255);"
+        "   padding: 8px 12px;"
+        "   border-radius: 6px;"
+        "}"
+    );
+
+    ui->groupBox_zaixian->setStyleSheet(
+        "QGroupBox::title { "
+        "   subcontrol-origin: margin;"
+        "   subcontrol-position: top left;"
+        "   left: 0px;"
+        "   top: -5px;"
+        "   color: rgb(31, 24, 24);"
+        "   background-color: rgb(255,255,255);"
+        "   padding: 8px 12px;"
+        "   border-radius: 6px;"
+        "}"
+    );
+    // 设置字体（可以试 "Arial Black", "Georgia", "华文行楷"）
+    QFont titleFont("Arial Black", 12, QFont::Bold);
+    ui->groupBox_wodeyinyue->setFont(titleFont);
+    ui->groupBox_zaixian->setFont(titleFont);
+
+    // 绑定进度条显示
+    //信号：positionChanged(qint64 position) 每当音乐播放位置变化（播放时每隔一段时间）就会触发
+    connect(music->player(), &QMediaPlayer::positionChanged, ui->horizontalSlider_music, &QSlider::setValue);
+    //信号：durationChanged(qint64 duration)
+    //当音乐文件被加载，或者音乐总长度发生变化时触发
+    connect(music->player(), &QMediaPlayer::durationChanged, ui->horizontalSlider_music, &QSlider::setMaximum);
+    // 拖动进度条跳转
+    connect(ui->horizontalSlider_music, &QSlider::sliderMoved, music->player(), &QMediaPlayer::setPosition);
+    ui->verticalSlider_musci->hide();
+    connect(music, &musicmodule::playSuccess, this, [this](){
+        qDebug() << "音乐播放成功";
+        ui->toolButton_bofangzanting->setIcon(QIcon(":/src/music/zanting.png"));
+    });
+
+    connect(music, &musicmodule::playFailed, this, [this](const QString &err){
+        qDebug() << "音乐播放失败:" << err;
+        ui->toolButton_bofangzanting->setIcon(QIcon(":/src/music/bofang.png"));
+    });
+
+    // 在构造函数中安装事件过滤器
+    ui->toolButton_sound->installEventFilter(this);
+    ui->openMusicBtn->setEnabled(true);
+    // 初始化隐藏计时器
+    hideTimer = new QTimer(this);
+    hideTimer->setSingleShot(true);
+    hideTimer->setInterval(1000); // 300毫秒延迟
+    connect(hideTimer, &QTimer::timeout, this, [this]() {
+        QPoint globalPos = QCursor::pos();
+        QPoint buttonPos = ui->toolButton_sound->mapFromGlobal(globalPos);
+        QPoint sliderPos = ui->verticalSlider_musci->mapFromGlobal(globalPos);
+
+        if (!ui->toolButton_sound->rect().contains(buttonPos) &&
+            !ui->verticalSlider_musci->rect().contains(sliderPos)) {
+            hideVolumeSlider();
+        }
+    });
+
+    connect(music, &musicmodule::songInfoChanged, this, [this](const QString &title, const QString &artist, const QString &composer){
+        ui->label_songname->setText(title);
+        ui->label_songauthor->setText(artist + " / " + composer);
+    });
+
 
     // 启动 MQTT 测试连接
     // mqttModule->connectToBroker("broker.emqx.io", 1883, "hhh_123");
@@ -60,6 +167,18 @@ void MainWindow::initUI()
     setFixedSize(1280, 800);
     setWindowTitle("MQTT 智能家居控制中心");
     setWindowIcon(QIcon(":/src/window.png"));
+
+    // 1️⃣ 设置 stackedWidget 固定大小
+    ui->stackedWidget->setFixedSize(1280, 780);
+
+    // 2️⃣ 设置 smart_mqtt_page  music_page固定大小
+    ui->smart_mqtt_page->setFixedSize(1280, 780);
+    ui->music_page->setFixedSize(1280, 780);
+
+    //smart_mqtt_page  相关页面大小
+    ui->left_widget->setGeometry(0,0,100,780);
+    ui->cloudWidget ->setGeometry(100,0,500,780);
+    ui->controlwidget ->setGeometry(600,0,680,780);
 }
 
 /* ==============================
@@ -540,8 +659,6 @@ void MainWindow::onAutoSendToggled(bool enabled)
 }
 
 
-
-
 void MainWindow::on_subTopicBtn_clicked()
 {
     // 获取输入的 Topic
@@ -562,4 +679,208 @@ void MainWindow::on_subTopicBtn_clicked()
     //  提示订阅成功
     //message：要显示的文本内容。timeout：显示时间（毫秒），表示消息在状态栏中显示多久后自动消失。
     ui->statusbar->showMessage(QString("已订阅 Topic: %1").arg(topic), 3000);
+}
+
+
+void MainWindow::on_toolButton_bofangzanting_clicked()
+{
+    qDebug() << "on_toolButton_bofangzanting_clicked:" << endl;
+    // 获取当前播放器状态
+    if (music->player()->state() == QMediaPlayer::PlayingState) {
+        music->playPause(); // 当前正在播放，调用暂停
+        ui->toolButton_bofangzanting->setIcon(QIcon(":/src/music/bofang.png"));
+    } else {
+        music->playPause(); // 当前是暂停状态，调用播放
+        ui->toolButton_bofangzanting->setIcon(QIcon(":/src/music/zanting.png"));
+    }
+}
+
+void MainWindow::on_verticalSlider_musci_valueChanged(int value)
+{
+    // 这个值就是当前的音量值
+    // 假设置音量的函数
+    music->setVolume(value);
+}
+
+void MainWindow::on_toolButton_sound_clicked()
+{
+    if (isMuted) {
+        // 取消静音，恢复之前的音量
+        isMuted = false;
+        ui->verticalSlider_musci->setValue(previousVolume);
+        ui->toolButton_sound->setIcon(QIcon(":/src/music/yinliang.png"));
+        music->setVolume(previousVolume);
+        qDebug() << "取消静音，恢复音量:" << previousVolume;
+    } else {
+        // 静音，保存当前音量
+        isMuted = true;
+        previousVolume = ui->verticalSlider_musci->value();
+        ui->verticalSlider_musci->setValue(0);
+        ui->toolButton_sound->setIcon(QIcon(":/src/music/jingyin.png"));
+        music->setVolume(0);
+        qDebug() << "静音，保存的音量:" << previousVolume;
+    }
+}
+
+
+void MainWindow::showMusicSlider()
+{
+    ui->verticalSlider_musci->show();
+    // 确保滑块获得焦点（可选）
+    ui->verticalSlider_musci->setFocus();
+}
+
+void MainWindow::hideMusicSlider()
+{
+    ui->verticalSlider_musci->hide();
+}
+
+void MainWindow::onMusicSliderValueChanged(int value)
+{
+    if (!isMuted) { // 只有在非静音状态下才更新实际音乐音量
+        // 设置音乐音量
+        qDebug() << "音乐音量变化:" << value << "%";
+        // 调用实际的音乐音量设置函数
+        music->setVolume(value);
+    }
+}
+
+void MainWindow::onMusicSliderReleased()
+{
+    qDebug() << "最终音乐音量设置:" << ui->verticalSlider_musci->value();
+    // 可以在这里添加保存设置到配置文件的代码
+    // saveMusicVolumeSetting(ui->verticalSlider_music->value());
+}
+
+
+void MainWindow::setupSoundControl()
+{
+    // 初始隐藏音乐滑块
+    ui->verticalSlider_musci->hide();
+
+    // 设置滑块范围
+    ui->verticalSlider_musci->setRange(0, 100);
+    ui->verticalSlider_musci->setValue(50);
+
+    // 安装事件过滤器
+    ui->toolButton_sound->installEventFilter(this);
+    ui->verticalSlider_musci->installEventFilter(this);
+
+    // 连接信号槽
+    connect(ui->toolButton_sound, &QToolButton::clicked,
+            this, &MainWindow::on_toolButton_sound_clicked);
+
+    connect(ui->verticalSlider_musci, &QSlider::valueChanged,
+            this, &MainWindow::onMusicSliderValueChanged);
+
+    connect(ui->verticalSlider_musci, &QSlider::sliderReleased,
+            this, &MainWindow::onMusicSliderReleased);
+}
+
+// 修改事件过滤器
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->toolButton_sound) {
+        if (event->type() == QEvent::Enter) {
+            hideTimer->stop(); // 停止可能的隐藏计时
+            showVolumeSlider();
+            return true;
+        }
+        else if (event->type() == QEvent::Leave) {
+            hideTimer->start(); // 启动延迟隐藏
+            return true;
+        }
+    }
+    else if (watched == ui->verticalSlider_musci) {
+        if (event->type() == QEvent::Enter) {
+            hideTimer->stop(); // 鼠标进入滑块，停止隐藏计时
+            return true;
+        }
+        else if (event->type() == QEvent::Leave) {
+            hideTimer->start(); // 启动延迟隐藏
+            return true;
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
+}
+
+
+void MainWindow::checkMousePosition()
+{
+    QPoint globalPos = QCursor::pos();
+    QPoint buttonPos = ui->toolButton_sound->mapFromGlobal(globalPos);
+    QPoint sliderPos = ui->verticalSlider_musci->mapFromGlobal(globalPos);
+
+    if (!ui->toolButton_sound->rect().contains(buttonPos) &&
+        !ui->verticalSlider_musci->rect().contains(sliderPos)) {
+        hideMusicSlider();
+    }
+}
+
+
+// mainwindow.cpp
+
+// 显示音量滑块
+void MainWindow::showVolumeSlider()
+{
+    qDebug() << "显示音量滑块";
+    if (ui->verticalSlider_musci) {
+        ui->verticalSlider_musci->show();
+        // 可选：确保滑块获得焦点
+        ui->verticalSlider_musci->setFocus();
+    }
+}
+
+// 隐藏音量滑块
+void MainWindow::hideVolumeSlider()
+{
+    qDebug() << "隐藏音量滑块";
+    if (ui->verticalSlider_musci) {
+        ui->verticalSlider_musci->hide();
+    }
+}
+
+// 处理静音切换
+void MainWindow::handleMuteToggle()
+{
+    static int previousVolume = 50; // 保存之前的音量
+    static bool isMuted = false;    // 静音状态标志
+
+    if (isMuted) {
+        // 取消静音，恢复之前的音量
+        isMuted = false;
+        if (ui->verticalSlider_musci) {
+            ui->verticalSlider_musci->setValue(previousVolume);
+        }
+        qDebug() << "取消静音，恢复音量:" << previousVolume;
+
+        // 更新按钮图标（如果有的话）
+        if (ui->toolButton_sound) {
+            // ui->toolButton_sound->setIcon(QIcon(":/icons/sound.png"));
+        }
+    } else {
+        // 静音，保存当前音量并设置为0
+        isMuted = true;
+        if (ui->verticalSlider_musci) {
+            previousVolume = ui->verticalSlider_musci->value();
+            ui->verticalSlider_musci->setValue(0);
+        }
+        qDebug() << "静音，保存的音量:" << previousVolume;
+
+        // 更新按钮图标（如果有的话）
+        if (ui->toolButton_sound) {
+            // ui->toolButton_sound->setIcon(QIcon(":/icons/mute.png"));
+        }
+    }
+}
+
+
+void MainWindow::on_openMusicBtn_clicked()
+{
+    qDebug() << "on_openMusicBtn_clicked:" << endl;
+    QString fileName = QFileDialog::getOpenFileName(this, "选择音乐文件", "", "音频文件 (*.mp3 *.wav)");
+    if(!fileName.isEmpty()){
+        music->playMusic(fileName);
+    }
 }

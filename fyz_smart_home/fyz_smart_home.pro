@@ -1,4 +1,4 @@
-QT       += core gui mqtt serialport
+QT       += core gui mqtt serialport multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,12 +20,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     mqttmodule.cpp \
+    musicmodule.cpp \
     serialmanager.cpp
 
 HEADERS += \
     controlmodule.h \
     mainwindow.h \
     mqttmodule.h \
+    musicmodule.h \
     serialmanager.h
 
 FORMS += \

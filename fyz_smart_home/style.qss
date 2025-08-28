@@ -522,3 +522,371 @@ QWidget#page_mqtt, QWidget#page_uart {
     border-radius: 8px;
     margin: 10px;
 }
+
+
+
+/*
+MUSIC
+*/
+
+/* 顶部区域 */
+/* ================= 顶部区域 ================= */
+/* 顶部导航栏，渐变蓝 + 圆角下边 */
+#widget_top {
+    background: qlineargradient(
+        x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 #73C9FF,    /* 顶部蓝色 */
+        stop: 1 #C6E7FF     /* 底部浅蓝 */
+    );
+    padding: 10px;
+}
+
+/* ================= 左下区域 ================= */
+/* 功能区：浅绿色半透明 */
+#widget_bottom_left {
+    background-color: rgba(144, 238, 144, 0.85); /* 浅绿色半透明 */
+    border: none;
+    padding: 15px;
+    color: rgb(30, 30, 30); /* 深色文字，以便在浅色背景上清晰可见 */
+}
+
+/* ================= 右下区域 ================= */
+/* 播放区：经典浅灰色半透明 */
+#widget_bottom_right {
+    background-color: rgba(240, 240, 240, 0.9); /* 经典浅灰色半透明 */
+    border: none;
+    padding: 15px;
+    color: rgb(30, 30, 30); /* 深色文字，与浅灰背景形成对比 */
+}
+
+
+
+
+
+/* ================= 统一阴影效果 ================= */
+/* 可以增加轻微阴影，让区域更分明 */
+#widget_bottom_left, #widget_bottom_right {
+    /* QSS 不支持 box-shadow, 可用背景渐变模拟 */
+    background: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 rgba(255,255,255,0.95),
+        stop:1 rgba(255,255,255,0.85)
+    );
+}
+
+
+/* QGroupBox 基础样式 */
+/* 🎵 我的音乐 - 浅绿色背景 */
+#groupBox_wodeyinyue {
+    border: none;
+    margin: 0px;
+    padding: 12px;
+    margin-top: 12px;
+    background-color: rgba(200, 255, 200, 0.7);  /* 浅绿色半透明 */
+    border-radius: 10px;                         /* 圆角 */
+}
+
+/* 🌐 在线音乐 - 浅蓝色背景 */
+#groupBox_zaixian {
+    border: none;
+    margin: 0px;
+    padding: 12px;
+    margin-top: 12px;
+    background-color: rgba(200, 220, 255, 0.7);  /* 浅蓝色半透明 */
+    border-radius: 10px;
+}
+
+
+/* 🎵 通用样式：下载、喜欢、最近播放、在线、电台、推荐 */
+#toolButton_biaoti,
+#toolButton_xiazai,
+#toolButton_xihuan,
+#toolButton_zuijinbofang,
+#toolButton_yinyueguan,
+#toolButton_diantai,
+#toolButton_tuijian {
+    font-size: 16px;
+    color: rgb(31, 24, 24);
+    border: none;
+    background: transparent;
+    padding-right: 10px;
+    spacing: 200px;          /* 图标和文字间距 */
+    text-align: left;       /* 文字靠左 */
+
+    /* ⚡ 关键属性，保证图标显示 */
+    qproperty-toolButtonStyle: ToolButtonTextBesideIcon;
+    qproperty-iconSize: 24px 24px;
+}
+
+/* 🔹 悬停 hover 状态 */
+#toolButton_xiazai:hover,
+#toolButton_xihuan:hover,
+#toolButton_zuijinbofang:hover,
+#toolButton_yinyueguan:hover,
+#toolButton_diantai:hover,
+#toolButton_tuijian:hover {
+    background-color: rgb(248, 70, 70);
+    border-radius: 8px;
+}
+
+/* 🔹 按下 pressed / 选中 checked 状态 */
+#toolButton_xiazai:checked,
+#toolButton_xihuan:checked,
+#toolButton_zuijinbofang:checked,
+#toolButton_yinyueguan:checked,
+#toolButton_diantai:checked,
+#toolButton_tuijian:checked,
+#toolButton_xiazai:pressed,
+#toolButton_xihuan:pressed,
+#toolButton_zuijinbofang:pressed,
+#toolButton_yinyueguan:pressed,
+#toolButton_diantai:pressed,
+#toolButton_tuijian:pressed {
+    background-color: rgb(248, 70, 70);
+    border-radius: 8px;
+    color: white;
+}
+
+/* 通用音乐按钮样式 */
+QToolButton#toolButton_zuidahua,
+QToolButton#toolButton_zuixiaohua,
+QToolButton#toolButton_zhuangban,
+QToolButton#toolButton_tuichu,
+QToolButton#toolButton_shangyiqu,
+QToolButton#toolButton_bofangzanting,
+QToolButton#toolButton_xiayiqu,
+QToolButton#toolButton_sound,
+QToolButton#toolButton_mode,
+QToolButton#toolButton_geci,
+QToolButton#toolButton_add
+{
+    /* 使用固定尺寸 */
+    width: 48px;
+    height: 48px;
+    /* 增大图标尺寸 */
+    qproperty-iconSize: 35px;
+    border: none;                      /* 无边框 */
+    border-radius: 12px;               /* 圆角 */
+    background-color: rgba(255,255,255,0.05); /* 默认浅透明背景 */
+    padding: 5px 10px;                 /* 内边距 */
+    font-weight: bold;
+}
+
+/* 悬停 hover 效果 */
+QToolButton#toolButton_biaoti:hover,
+QToolButton#toolButton_zuidahua:hover,
+QToolButton#toolButton_zuixiaohua:hover,
+QToolButton#toolButton_zhuangban:hover,
+QToolButton#toolButton_tuichu:hover,
+QToolButton#toolButton_shangyiqu:hover,
+QToolButton#toolButton_bofangzanting:hover,
+QToolButton#toolButton_xiayiqu:hover,
+QToolButton#toolButton_sound:hover,
+QToolButton#toolButton_mode:hover,
+QToolButton#toolButton_geci:hover,
+QToolButton#toolButton_add:hover
+{
+    background-color: rgba(72, 218, 213, 0.3); /* 浅蓝高亮 */
+}
+
+/* 按下 pressed / 选中 checked 状态 */
+QToolButton#toolButton_biaoti:pressed,
+QToolButton#toolButton_zuidahua:pressed,
+QToolButton#toolButton_zuixiaohua:pressed,
+QToolButton#toolButton_zhuangban:pressed,
+QToolButton#toolButton_tuichu:pressed,
+QToolButton#toolButton_shangyiqu:pressed,
+QToolButton#toolButton_bofangzanting:pressed,
+QToolButton#toolButton_xiayiqu:pressed,
+QToolButton#toolButton_sound:pressed,
+QToolButton#toolButton_mode:pressed,
+QToolButton#toolButton_geci:pressed,
+QToolButton#toolButton_add:pressed
+{
+    background-color: rgba(72, 218, 213, 0.6); /* 深蓝高亮 */
+    color: white; /* 按下文字变白 */
+}
+
+
+/* ===== 歌曲播放进度条 - 水平 ===== */
+#horizontalSlider_music {
+    /* 基础设置 */
+    background: transparent;
+    height: 16px;
+    margin: 0px;
+    padding: 0px 8px;
+}
+
+/* 滑轨背景 */
+#horizontalSlider_music::groove:horizontal {
+    border: none;
+    height: 6px;
+    background: #e0e0e0;           /* 未播放部分底色 */
+    border-radius: 3px;
+}
+
+/* 已播放部分 - 渐变效果 */
+#horizontalSlider_music::sub-page:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #FF6B6B,           /* 珊瑚红 */
+        stop:0.5 #4ECDC4,         /* 青绿色 */
+        stop:1 #45B7D1);          /* 天蓝色 */
+    border-radius: 3px;
+    border: none;
+}
+
+/* 滑块样式 */
+#horizontalSlider_music::handle:horizontal {
+    background: #ffffff;
+    border: 3px solid #FF6B6B;     /* 与进度条同色边框 */
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    margin: -7px 0;                /* 居中对齐 */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 滑块悬停效果 */
+#horizontalSlider_music::handle:horizontal:hover {
+    background: #FF6B6B;
+    border: 3px solid #ffffff;
+    transform: scale(1.2);
+}
+
+/* 滑块按下效果 */
+#horizontalSlider_music::handle:horizontal:pressed {
+    background: #FF4757;
+    border: 3px solid #ffffff;
+    box-shadow: 0 3px 8px rgba(255, 107, 107, 0.5);
+}
+
+/* 进度条悬停时变粗 */
+#horizontalSlider_music:hover::groove:horizontal {
+    height: 8px;
+    border-radius: 4px;
+}
+
+#horizontalSlider_music:hover::sub-page:horizontal {
+    height: 8px;
+    border-radius: 4px;
+}
+
+#horizontalSlider_music:hover::add-page:horizontal {
+    height: 8px;
+    border-radius: 4px;
+}
+
+#verticalSlider_musci::groove:vertical {
+    width: 24px;
+    border-radius: 6px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #004a99,
+        stop:1 #0077c2);
+}
+
+#verticalSlider_musci::sub-page:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #c0e6ff,
+        stop:1 #a0d4ff);
+    border-radius: 6px;
+}
+
+#verticalSlider_musci::handle:vertical {
+    width: 28px;            /* >= groove 宽度 */
+    height: 28px;
+    margin: 0 -14px;        /* -width/2 */
+    border: none;
+    background: transparent;
+    image: url(:/src/music/huakuai.png);
+}
+
+#verticalSlider_musci::handle:vertical:hover {
+    width: 28px;
+    height: 28px;
+    margin: 0 -14px;
+    image: url(:/src/music/huakuai.png);
+}
+
+#verticalSlider_musci::handle:vertical:pressed {
+    width: 28px;
+    height: 28px;
+    margin: 0 -14px;
+    image: url(:/src/music/huakuai.png);
+}
+
+
+
+/* 打开本地音乐效果 */
+QPushButton#openMusicBtn {
+    /* 现代醒目设计 */
+    background-color: #00cc66;         /* 更鲜艳的亮绿色 */
+    border: none;
+    border-radius: 25px;               /* 更大的圆角 */
+    color: black;
+    font-weight: 700;                  /* 更重的字重 */
+    font-size: 16px;                   /* 更大的字体 */
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif; /* 更好的字体 */
+
+    /* 尺寸设置 */
+    min-width: 120px;                  /* 最小宽度 */
+    min-height: 50px;                  /* 更大的高度 */
+    padding: 15px 30px;                /* 更大的内边距 */
+
+    /* 文字阴影 */
+    text-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
+
+    /* 按钮阴影 */
+    box-shadow: 0px 5px 15px rgba(0, 204, 102, 0.4);
+
+    /* 渐变背景效果 */
+    background: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0 #00ff88,               /* 顶部更亮的绿色 */
+        stop: 1 #00cc66                /* 底部深一点的绿色 */
+    );
+
+    /* 过渡动画 */
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 悬停效果 - 更明显的亮绿色 */
+QPushButton#openMusicBtn:hover {
+    background: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0 #00ff99,
+        stop: 1 #00dd77
+    );
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 255, 136, 0.5);
+    font-size: 16px;
+}
+
+/* 按下效果 - 深绿色反馈 */
+QPushButton#openMusicBtn:pressed {
+    background: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 0, y2: 1,
+        stop: 0 #00bb55,
+        stop: 1 #009944
+    );
+    transform: translateY(1px);
+    box-shadow: 0 3px 10px rgba(0, 187, 85, 0.4);
+    padding: 16px 29px 14px 31px;      /* 按下位移效果 */
+}
+
+/* 焦点效果 - 明显的发光边框 */
+QPushButton#openMusicBtn:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 255, 136, 0.6),
+                0 5px 15px rgba(0, 204, 102, 0.4);
+}
+
+/* 禁用状态 */
+QPushButton#openMusicBtn:disabled {
+    background: #888888;
+    color: #cccccc;
+    box-shadow: none;
+    transform: none;
+}
