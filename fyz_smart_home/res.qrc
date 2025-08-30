@@ -4,8 +4,6 @@
         <file>src/window_beijing_resized.png</file>
         <file>style.qss</file>
         <file>src/cloud_unpressed.png</file>
-        <file>src/status_pressed.png</file>
-        <file>src/status_unpressed.png</file>
         <file>src/uart_pressed.png</file>
         <file>src/uart_unpressed.png</file>
         <file>src/window.png</file>
@@ -42,7 +40,21 @@
         <file>src/music/xihuan.png</file>
         <file>src/music/jingyin.png</file>
         <file>src/music/geci.png</file>
-        <file>music/程响 - 人间烟火.mp3</file>
+        <file>music/1.mp3</file>
         <file>src/music/huakuai.png</file>
+        <file>picture/exit.png</file>
+        <file>picture/last.png</file>
+        <file>picture/next.png</file>
+        <file>picture/1.png</file>
+        <file>picture/2.png</file>
+        <file>picture/3.png</file>
+        <file>picture/4.png</file>
+        <file>picture/6.png</file>
+        <file>picture/8.png</file>
+        <file>picture/5.png</file>
+        <file>picture/7.png</file>
+        <file>src/music.png</file>
+        <file>src/photo.png</file>
+        <file>src/smart.png</file>
     </qresource>
 </RCC>

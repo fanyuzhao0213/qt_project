@@ -24,7 +24,7 @@ musicmodule::musicmodule(QWidget *parent) : QWidget(parent)
     connect(m_player, SIGNAL(metaDataChanged()),
             this, SLOT(updateSongInfo()));
 
-    playMusic("qrc:/music/程响 - 人间烟火.mp3"); // 注意路径不要用反斜杠
+    playMusic("qrc:/music/1.mp3"); // 注意路径不要用反斜杠
 
 }
 

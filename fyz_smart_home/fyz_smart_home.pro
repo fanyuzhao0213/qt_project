@@ -21,6 +21,7 @@ SOURCES += \
     mainwindow.cpp \
     mqttmodule.cpp \
     musicmodule.cpp \
+    photomodule.cpp \
     serialmanager.cpp
 
 HEADERS += \
@@ -28,6 +29,7 @@ HEADERS += \
     mainwindow.h \
     mqttmodule.h \
     musicmodule.h \
+    photomodule.h \
     serialmanager.h
 
 FORMS += \

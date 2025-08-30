@@ -11,11 +11,14 @@
 #include <QIcon>
 #include <QPixmap>
 #include <QCheckBox>
+#include <QStackedWidget>
 
 #include "controlmodule.h"   // 控制模块（LED/Fan/Alarm）
 #include "mqttmodule.h"      // MQTT 模块
 #include "serialmanager.h"   // 串口管理模块
 #include "musicmodule.h"
+#include "photomodule.h"  // 必须在 MainWindow 类定义前包含
+
 #include <QEvent>
 #include <QMouseEvent>
 
@@ -36,6 +39,18 @@ public:
     ~MainWindow();                                  ///< 析构函数
 
     QMqttClient *m_client = nullptr;               ///< MQTT 客户端指针（可选直接操作）
+
+    /*stackedWidget 外部接口*/
+    QStackedWidget* getStackedWidget() const;
+    // 切换 stackedWidget 页面
+    void switchStackedPage(int index);
+
+    /* 相册功能*/
+    // 提供接口让外部模块访问控件
+    QLabel* getPhotoLabel() const;
+    QPushButton* getPrevButton() const;
+    QPushButton* getNextButton() const;
+    QPushButton* getExitButton() const;
 
 protected:
     /**
@@ -100,6 +115,14 @@ private slots:
     // 声音控制初始化函数 - 初始化声音相关的控件状态和信号连接
     void setupSoundControl();
 
+    void on_photoBtn_clicked();
+
+    void on_musicBtn_clicked();
+
+    void on_toolButton_tuichu_clicked();
+
+    void on_exitphotoBtn_clicked();
+
 private:
     // ================= 初始化函数 =================
     void initUI();          ///< 初始化窗口布局、图标和标题
@@ -118,6 +141,7 @@ private:
     ControlModule *controlModule; ///< 控制模块（LED / Fan / Alarm）
     MqttModule *mqttModule;       ///< MQTT 模块
     serialmanager *serialMgr;     ///< 串口管理模块
+    photomodule *photoModule;     // < 相册管理模块
 
     QTimer *sendTimer;            ///< 串口定时发送定时器
     bool mqttConnected;           ///< MQTT 连接状态标志

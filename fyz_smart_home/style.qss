@@ -24,76 +24,60 @@
 }
 
 /* ===========================
- * 状态按钮样式
+ * 通用按钮基础样式（默认文字）
  * =========================== */
-#statusBtn {
-    border: none;              /* 无边框 */
-    border-radius: 12px;       /* 圆角 */
-    min-width: 95px; max-width: 95px;
-    min-height: 50px; max-height: 50px;
-    background-color: rgb(22, 140, 53); /* 背景色与面板一致 */
-    color: white;               /* 文字颜色 */
-    font-size: 16px;            /* 字号 */
-    font-weight: 600;           /* 加粗 */
-    text-align: center;         /* 水平居中 */
-    line-height: 50px;          /* 垂直居中 */
-}
-
-/* 被按下或选中状态 */
-#statusBtn:checked,
-#statusBtn:pressed {
-    border-image: url(:/src/status_pressed.png) 0 0 0 0 stretch stretch; /* 覆盖背景图 */
-    background-color: none;    /* 背景由图片覆盖 */
-    color: transparent;        /* 隐藏文字 */
-}
-
-/* ===========================
- * MQTT 按钮样式
- * =========================== */
-#mqttBtn {
+#statusBtn, #mqttBtn, #uartBtn, #musicBtn, #photoBtn {
     border: none;
     border-radius: 12px;
-    min-width: 95px; max-width: 95px;
-    min-height: 50px; max-height: 50px;
-    background-color: rgb(22, 140, 53);
-    color: white;
+    min-width: 95px;
+    max-width: 95px;
+    min-height: 50px;
+    max-height: 50px;
+    background-color: rgb(22, 140, 53);  /* 默认绿色背景 */
+    color: white;                        /* 默认文字颜色 */
     font-size: 16px;
     font-weight: 600;
     text-align: center;
-    line-height: 50px;
-}
-
-/* 被按下或选中状态 */
-#mqttBtn:checked,
-#mqttBtn:pressed {
-    border-image: url(:/src/cloud_pressed.png) 0 0 0 0 stretch stretch;
-    background-color: none;
-    color: transparent;
+    line-height: 50px;                   /* 垂直居中文字 */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 /* ===========================
- * UART 按钮样式
+ * 按下/选中状态（显示图片，隐藏文字）
  * =========================== */
-#uartBtn {
-    border: none;
-    border-radius: 12px;
-    min-width: 95px; max-width: 95px;
-    min-height: 50px; max-height: 50px;
-    background-color: rgb(22, 140, 53);
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-    line-height: 50px;
+#statusBtn:checked, #statusBtn:pressed {
+    border-image: url(:/src/smart.png) 0 0 0 0 stretch stretch;
+    background-color: transparent;   /* 背景用图覆盖 */
+    color: transparent;              /* 隐藏文字 */
 }
 
-/* 被按下或选中状态 */
-#uartBtn:checked,
-#uartBtn:pressed {
-    border-image: url(:/src/uart_pressed.png) 0 0 0 0 stretch stretch;
-    background-color: none;
+#mqttBtn:checked, #mqttBtn:pressed {
+    border-image: url(:/src/smart.png) 0 0 0 0 stretch stretch;
+    background-color: transparent;
     color: transparent;
 }
+
+#uartBtn:checked, #uartBtn:pressed {
+    border-image: url(:/src/smart.png) 0 0 0 0 stretch stretch;
+    background-color: transparent;
+    color: transparent;
+}
+
+#musicBtn:checked, #musicBtn:pressed {
+    border-image: url(:/src/music.png) 0 0 0 0 stretch stretch;
+    background-color: transparent;
+    color: transparent;
+}
+
+#photoBtn:checked, #photoBtn:pressed {
+    border-image: url(:/src/photo.png) 0 0 0 0 stretch stretch;
+    background-color: transparent;
+    color: transparent;
+}
+
+
 
 /* ===========================
  * 云处理界面样式 - 半透明
@@ -889,4 +873,33 @@ QPushButton#openMusicBtn:disabled {
     color: #cccccc;
     box-shadow: none;
     transform: none;
+}
+
+
+/*MUSIC*/
+/* 上一个按钮 */
+#lastphotoBtn {
+    border: none;
+    background: transparent;
+    image: url(:/picture/last.png);
+}
+
+
+/* 下一个按钮 */
+#nextphotoBtn {
+    border: none;
+    background: transparent;
+    image: url(:/picture/next.png);
+}
+
+
+/* 退出按钮 */
+#exitphotoBtn {
+    border: none;
+    background: transparent;
+    min-width: 25px;
+    min-height: 25px;
+    max-width: 25px;
+    max-height: 25px;
+    image: url(:/picture/exit.png);
 }

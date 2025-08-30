@@ -27,7 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //强制 music_page 使用样式背景
     ui->music_page->setAttribute(Qt::WA_StyledBackground, true);
-    ui->stackedWidget->setCurrentWidget(ui->music_page);
+//    ui->stackedWidget->setCurrentWidget(ui->music_page);
+    ui->stackedWidget->setCurrentWidget(ui->smart_mqtt_page);
 
     // 初始化模块
     controlModule = new ControlModule(this);
@@ -35,6 +36,13 @@ MainWindow::MainWindow(QWidget *parent)
     serialMgr     = new serialmanager(this);
     sendTimer     = new QTimer(this);
     music         = new musicmodule(this);
+    // 创建相册模块并加载照片
+    photoModule   = new photomodule(this);
+    photoModule->loadPhotos(":/picture/");
+    // 设置单张图片
+    QPixmap pix(":/picture/1.png");  // 资源路径
+    ui->label_photo->setPixmap(pix);
+    ui->label_photo->setScaledContents(true); // 自动拉伸填充
 
     // ====== 封装函数调用，保持主构造简洁 ======
     initUI();
@@ -190,6 +198,8 @@ void MainWindow::initButtons()
     ui->statusBtn->setCheckable(true);
     ui->mqttBtn->setCheckable(true);
     ui->uartBtn->setCheckable(true);
+    ui->musicBtn->setCheckable(true);
+    ui->photoBtn->setCheckable(true);
 
     ui->ledBtn->setCheckable(true);
     ui->fanBtn->setCheckable(true);
@@ -883,4 +893,77 @@ void MainWindow::on_openMusicBtn_clicked()
     if(!fileName.isEmpty()){
         music->playMusic(fileName);
     }
+}
+
+
+QStackedWidget* MainWindow::getStackedWidget() const
+{
+    return ui->stackedWidget;
+}
+
+void MainWindow::switchStackedPage(int index)
+{
+    if (!ui) return;
+
+    int pageCount = ui->stackedWidget->count();
+    if (index >= 0 && index < pageCount)
+    {
+        ui->stackedWidget->setCurrentIndex(index);
+    }
+    else
+    {
+        qDebug() << "[StackedWidget] Invalid page index:" << index;
+    }
+}
+
+/* 相册接口*/
+// 通过 getter 暴露控件
+QLabel* MainWindow::getPhotoLabel() const
+{
+    return ui->label_photo;
+}
+
+QPushButton* MainWindow::getPrevButton() const
+{
+    return ui->lastphotoBtn;
+}
+
+QPushButton* MainWindow::getNextButton() const
+{
+    return ui->nextphotoBtn;
+}
+
+QPushButton* MainWindow::getExitButton() const
+{
+    return ui->exitphotoBtn;
+}
+
+
+
+
+void MainWindow::on_photoBtn_clicked()
+{
+    ui->photoBtn->setChecked(false);
+//    ui->stackedWidget->setCurrentWidget(ui->photo_book_page);
+    switchStackedPage(2);
+}
+
+void MainWindow::on_musicBtn_clicked()
+{
+//    ui->stackedWidget->setCurrentWidget(ui->music_page);
+    switchStackedPage(1);
+}
+
+void MainWindow::on_toolButton_tuichu_clicked()
+{
+    ui->musicBtn->setChecked(false);
+//    ui->stackedWidget->setCurrentWidget(ui->smart_mqtt_page);
+    switchStackedPage(0);
+}
+
+void MainWindow::on_exitphotoBtn_clicked()
+{
+    ui->photoBtn->setChecked(false);
+//    ui->stackedWidget->setCurrentWidget(ui->smart_mqtt_page);
+    switchStackedPage(0);
 }
