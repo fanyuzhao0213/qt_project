@@ -56,5 +56,6 @@
         <file>src/music.png</file>
         <file>src/photo.png</file>
         <file>src/smart.png</file>
+        <file>gif/1.gif</file>
     </qresource>
 </RCC>

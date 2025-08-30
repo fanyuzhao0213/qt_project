@@ -27,8 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //强制 music_page 使用样式背景
     ui->music_page->setAttribute(Qt::WA_StyledBackground, true);
-//    ui->stackedWidget->setCurrentWidget(ui->music_page);
-    ui->stackedWidget->setCurrentWidget(ui->smart_mqtt_page);
+    switchStackedPage(0);
 
     // 初始化模块
     controlModule = new ControlModule(this);
@@ -43,6 +42,13 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap pix(":/picture/1.png");  // 资源路径
     ui->label_photo->setPixmap(pix);
     ui->label_photo->setScaledContents(true); // 自动拉伸填充
+
+    // 加载 GIF 动画
+    QMovie *movie = new QMovie(":/gif/1.gif"); // GIF 文件路径
+    movie->setScaledSize(QSize(1180, 765));                 // 缩放 GIF
+    movie->setSpeed(100);                                 // 播放速度 100%
+    ui->label_idle_gif->setMovie(movie);
+    movie->start();                                       // 循环播放
 
     // ====== 封装函数调用，保持主构造简洁 ======
     initUI();
@@ -175,18 +181,6 @@ void MainWindow::initUI()
     setFixedSize(1280, 800);
     setWindowTitle("MQTT 智能家居控制中心");
     setWindowIcon(QIcon(":/src/window.png"));
-
-    // 1️⃣ 设置 stackedWidget 固定大小
-    ui->stackedWidget->setFixedSize(1280, 780);
-
-    // 2️⃣ 设置 smart_mqtt_page  music_page固定大小
-    ui->smart_mqtt_page->setFixedSize(1280, 780);
-    ui->music_page->setFixedSize(1280, 780);
-
-    //smart_mqtt_page  相关页面大小
-    ui->left_widget->setGeometry(0,0,100,780);
-    ui->cloudWidget ->setGeometry(100,0,500,780);
-    ui->controlwidget ->setGeometry(600,0,680,780);
 }
 
 /* ==============================
@@ -939,21 +933,6 @@ QPushButton* MainWindow::getExitButton() const
 }
 
 
-
-
-void MainWindow::on_photoBtn_clicked()
-{
-    ui->photoBtn->setChecked(false);
-//    ui->stackedWidget->setCurrentWidget(ui->photo_book_page);
-    switchStackedPage(2);
-}
-
-void MainWindow::on_musicBtn_clicked()
-{
-//    ui->stackedWidget->setCurrentWidget(ui->music_page);
-    switchStackedPage(1);
-}
-
 void MainWindow::on_toolButton_tuichu_clicked()
 {
     ui->musicBtn->setChecked(false);
@@ -966,4 +945,41 @@ void MainWindow::on_exitphotoBtn_clicked()
     ui->photoBtn->setChecked(false);
 //    ui->stackedWidget->setCurrentWidget(ui->smart_mqtt_page);
     switchStackedPage(0);
+}
+
+void MainWindow::on_statusBtn_clicked(bool checked)
+{
+    if(checked)
+    {
+        switchStackedPage(1);
+    }
+    else
+    {
+        switchStackedPage(0);
+    }
+
+}
+
+void MainWindow::on_musicBtn_clicked(bool checked)
+{
+    if(checked)
+    {
+        switchStackedPage(2);
+    }
+    else
+    {
+        switchStackedPage(0);
+    }
+}
+
+void MainWindow::on_photoBtn_clicked(bool checked)
+{
+    if(checked)
+    {
+        switchStackedPage(3);
+    }
+    else
+    {
+        switchStackedPage(0);
+    }
 }

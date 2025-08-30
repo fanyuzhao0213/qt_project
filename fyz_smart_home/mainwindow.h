@@ -21,6 +21,7 @@
 
 #include <QEvent>
 #include <QMouseEvent>
+#include <QMovie>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -115,13 +116,15 @@ private slots:
     // 声音控制初始化函数 - 初始化声音相关的控件状态和信号连接
     void setupSoundControl();
 
-    void on_photoBtn_clicked();
-
-    void on_musicBtn_clicked();
-
     void on_toolButton_tuichu_clicked();
 
     void on_exitphotoBtn_clicked();
+
+    void on_statusBtn_clicked(bool checked);
+
+    void on_musicBtn_clicked(bool checked);
+
+    void on_photoBtn_clicked(bool checked);
 
 private:
     // ================= 初始化函数 =================
@@ -152,6 +155,7 @@ private:
     void setupVolumeControl();
     QTimer *hideTimer;            ///隐藏定时器
 
+    QMovie *movie;
 };
 
 #endif // MAINWINDOW_H
